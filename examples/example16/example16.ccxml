@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  - The following example code creates an outgoing call and when the
+  - call is connected a dialog is started for it. When the dialog
+  - terminates the connection is disconnected and this session exits.
+  -
+  - This simple example is not meant to be a complete application and
+  - does not handle all error events.
+ -->
+
+<ccxml version="1.0">
+
+  <var name="conn_id" />
+
+  <eventprocessor>
+
+    <transition event="ccxml.loaded">
+      <log expr="'Session loaded.'"/>
+      <createcall dest="'tel:1234'" connectionid="conn_id"/>
+    </transition>
+
+    <transition event="connection.connected">
+      <log expr="'Connection connected.'"/>
+      <dialogstart src="'example16a.vxml'" connectionid="conn_id"/>
+    </transition>
+
+    <transition event="dialog.started">
+      <log expr="'Dialog started.'"/>
+    </transition>
+
+    <transition event="dialog.exit">
+      <log expr="'Dialog exited.'"/>
+      <disconnect connectionid="conn_id"/>
+    </transition>
+
+    <transition event="connection.disconnected">
+      <log expr="'Connection disconnected. Exiting.'"/>
+      <exit/>
+    </transition>
+
+  </eventprocessor>
+</ccxml>

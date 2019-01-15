@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="Speech Recognition Grammar example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<catch event="exit">
+  <prompt> Exit! </prompt>
+  <exit/>
+</catch>
+
+<link event="help">
+  <grammar root="main">
+    <rule id="main" scope="public">
+      <item repeat="0-1"> please </item>
+      <item repeat="0-1"> I need </item>
+      help
+      <item repeat="0-1"> me </item>
+      <item repeat="0-1"> please </item>
+    </rule>
+  </grammar>
+</link>
+
+<link event="exit">
+  <grammar root="main">
+    <rule id="main" scope="public">
+      <one-of>
+        <item>exit</item>
+        <item>quit</item>
+      </one-of>
+    </rule>
+  </grammar>
+</link>
+
+<form id="start">
+  <block>
+    Welcome to a simple object manipulator.
+  </block>
+
+  <field name="command">
+    <nomatch>
+      I don't understand you. I can open, close,
+      move and delete windows, files and menus,
+    </nomatch>
+    <help> I can open, close, move and delete windows, files and menus. </help>
+
+    <prompt> What can I do for you? </prompt>
+    <grammar src="command.grxml"/>
+
+    <filled>
+      <prompt>
+        You want me to <value expr="command.action + ' ' + command.object"/>.
+        Do it yourself for now. Goodbye.
+      </prompt>
+    </filled>
+  </field>
+</form>
+
+</vxml>

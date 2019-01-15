@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="author"
+      content="Vit Novacek, Faculty of Informatics, Masaryk University Brno,
+               Czaech Republic"/>
+<meta name="copyright"
+      content="Copyright (c) 2004 Vit Novacek; You can redistribute and/or modify
+               this file under the terms of the GNU General Public License"/>
+
+<!-- global variables and scripts for the whole application -->
+<var name="inventory"/>
+<var name="tvState"/>
+<var name="statueBr"/>
+<var name="trigger"/>   <!-- game flow control -->
+<var name="prompt"/>    <!-- prompt, prompts for scenes 0-6, -->
+
+<script>
+  <![CDATA[
+    // initialization of inventory (false ... no such item in inventory)
+    // 0 ... mouse trap
+    // 1 ... beer can
+    // 2 ... cheese
+    // 3 ... cat
+    // 4 ... magic wand
+    // 5 ... trap&cheese
+    // 6 ... trap&mouse
+    function initInv() {
+      for(var i=0; i<7; i++) {
+        inventory[i]=false;
+      }
+    }
+
+    // gets the actual inventory string representation
+    function getInv() {
+      var inv = new Array("mouse trap, ",
+                          "Guinness beer can, ",
+			  "piece of cheese, ",
+			  "black cat, ",
+			  "magic wand, ",
+			  "mouse trap with cheese bait, ",
+			  "trap with a mouse inside, ");
+      var str = "Your actual loot consists of: ";
+      for(var i=0; i<=6; i++) {
+        if(inventory[i])
+          str=str+inv[i];
+      }
+      return str;
+    }
+
+    // processing the semantics of particular rooms
+    function process0(act) {
+      var trg=0, ind, suffind=0;
+      var suffixes=new Array("","mouse trap.","beer.","cheese.",
+                             "cat.","magic wand.");
+      var strs=new Array("You're going upstairs.",
+                         "Ordinary mouse trap, there is no bait inside.",
+			 "What a huge hollow useless mechanism. But there is a beer can inside!",
+			 "Wow, a well preserved can of Guinness beer!",
+			 "You took a trap.",
+			 "It's too heavy!",
+			 "You took a beer.",
+			 "Nothing happened.",
+			 "You don't have any ",
+			 "You put the trap with a cheese bait on the floor. Suddenly a mouse ran from the dark corner and got caught in the trap. So now you have a trap with the mouse inside!",
+			 "Something is scrunching inside.",
+			 "What a huge hollow useless mechanism.",
+			 "You put the cheese into the trap!");
+      switch(act) {
+        case 10: trg=1; ind=0; break;
+        case 20: ind=1; break;
+	case 21: if(inventory[1]) {ind=11; break;} else {ind=2; break;}
+        case 22: ind=3; break;
+	case 30: ind=4; inventory[0]=true; break;  // trap taken
+	case 31: ind=5; break;                     // cannot take washing-m.
+	case 32: ind=6; inventory[1]=true; break;  // beer taken
+	case 40:
+	if(inventory[0] || inventory[6]) {   // trap empty or mouse already in
+	    ind=7; break;
+	  } else {
+	    if(inventory[5]) {               // trap with cheese-catch a mouse
+	      ind=9; inventory[5]=false; inventory[6]=true; break;
+	    } else {
+	      ind=8; suffind=1;              // no trap
+	    }
+	  }
+	  break;
+	case 41:
+	  ind=10; break;                     // something's scrunching inside
+	case 42:
+          if(inventory[1]) {ind=7; break;} else {ind=8; suffind=2; break;}
+	case 43:
+	  if(inventory[2]) {
+	    if(inventory[0]) {
+	        ind=12; inventory[0]=false; inventory[2]=false;
+	        inventory[5]=true; break;
+	      } else {
+	        ind=7; break;
+	      }
+	  } else {ind=8; suffind=3; break;}
+        case 44:
+          if(inventory[3]) {ind=7; break;} else {ind=8; suffind=4; break;}
+        case 45:
+          if(inventory[4]) {ind=7; break;} else {ind=8; suffind=5; break;}
+      }
+      if(act!=255)
+        prompt=strs[ind]+suffixes[suffind];
+      else
+        prompt=getInv();
+      return trg;
+    }
+
+    function process1(act) {
+      var trg=0, ind, suffind=0;
+      var suffixes=new Array("","mouse trap.","beer.","cheese.",
+                             "cat.","magic wand.");
+      var strs=new Array("You're going upstairs.",
+                         "You're going to the cellar.",
+                         "You're going to the kitchen.",
+			 "You're going to the living room.",
+			 "I really don't want to get lost out there while admiring an American suburban architecture. I'd rather stay indside the house.",
+			 "A genuine palm with a bunch of thick leafs.",
+			 "It's too heavy!",
+			 "Nothing happened.",
+			 "You don't have any ",
+			 "You've manufactured a fancy disguise headband from the palm leaf. Now you're yet less likely to be seen than before.",
+			 "You put the cheese into the trap!");
+      switch(act) {
+        case 10: trg=1; ind=0; break;
+	case 11: trg=2; ind=1; break;
+        case 12: trg=3; ind=2; break;
+	case 13: trg=4; ind=3; break;
+        case 14: ind=4; break;
+        case 20: ind=5; break;
+	case 30: ind=6; break;
+	case 40:
+	  if(inventory[0] || inventory[5] || inventory[6])
+	    {ind=7; break;}
+	  else
+	    {ind=8; suffind=1; break;}
+	case 41: ind=9; break;
+	case 42:
+          if(inventory[1]) {ind=7; break;} else {ind=8; suffind=2; break;}
+        case 43:
+	  if(inventory[2]) {
+	    if(inventory[0]) {
+	        ind=10; inventory[0]=false; inventory[2]=false;
+	        inventory[5]=true; break;
+	      } else {
+	        ind=7; break;
+	      }
+	  } else {ind=8; suffind=3; break;}
+        case 44:
+          if(inventory[3]) {ind=7; break;} else {ind=8; suffind=4; break;}
+        case 45:
+          if(inventory[4]) {ind=7; break;} else {ind=8; suffind=5; break;}
+      }
+      if(act!=255)
+        prompt=strs[ind]+suffixes[suffind];
+      else
+        prompt=getInv();
+      return trg;
+    }
+
+    function process2(act) {
+      var trg=0, ind, suffind=0;
+      var suffixes=new Array("","mouse trap.","beer.","cheese.",
+                             "cat.","magic wand.");
+      var strs=new Array("You're going downstairs.",
+                         "You're going to the bedroom.",
+			 "You're going to the children room.",
+			 "Nothing happened.",
+			 "You don't have any ",
+			 "You put the cheese into the trap!");
+      switch(act) {
+        case 10: trg=1; ind=0; break;
+	case 11: trg=2; ind=1; break;
+        case 12: trg=3; ind=2; break;
+	case 40:
+	  if(inventory[0] || inventory[5] || inventory[6])
+	    {ind=3; break;}
+	  else
+	    {ind=4; suffind=1; break;}
+	case 41:
+          if(inventory[1]) {ind=3; break;} else {ind=4; suffind=2; break;}
+	case 42:
+	  if(inventory[2]) {
+	    if(inventory[0]) {
+	        ind=5; inventory[0]=false; inventory[2]=false;
+	        inventory[5]=true; break;
+	      } else {
+	        ind=3; break;
+	      }
+	  } else {ind=4; suffind=3; break;}
+        case 43:
+          if(inventory[3]) {ind=3; break;} else {ind=4; suffind=4; break;}
+        case 44:
+          if(inventory[4]) {ind=3; break;} else {ind=4; suffind=5; break;}
+      }
+      if(act!=255)
+        prompt=strs[ind]+suffixes[suffind];
+      else
+        prompt=getInv();
+      return trg;
+    }
+
+    function process3(act) {
+      var trg=0, ind, suffind=0;
+      var suffixes=new Array("","mouse trap.","beer.","cheese.",
+                             "cat.","magic wand.");
+      var strs=new Array("You're going back to the lower hall.",
+                         "A nice yellow little piece of cheese.",
+			 "I'd rather stay off this squirling tornado.",
+			 "You took a piece of cheese.",
+			 "Nothing happened.",
+			 "You don't have any ",
+			 "You've tried to spook the lady, but she seems to be too unconcerned with her vicinity, so it takes no effect.",
+			 "You put the cheese into the trap!");
+      switch(act) {
+        case 10: trg=1; ind=0; break;
+        case 20: ind=1; break;
+	case 21: ind=2; break;
+	case 30: ind=3; inventory[2]=true; break;
+	case 40:
+	  if(inventory[0] || inventory[5] || inventory[6])
+	    {ind=4; break;} else {ind=5; suffind=1; break;}
+	case 41: ind=6; break;
+	case 42:
+          if(inventory[1]) {ind=4; break;} else {ind=5; suffind=2; break;}
+	case 43:
+	  if(inventory[2]) {
+	    if(inventory[0]) {
+	        ind=7; inventory[0]=false; inventory[2]=false;
+	        inventory[5]=true; break;
+	      } else {
+	        ind=4; break;
+	      }
+	  } else {ind=5; suffind=3; break;}
+        case 44:
+          if(inventory[3]) {ind=4; break;} else {ind=5; suffind=4; break;}
+        case 45:
+          if(inventory[4]) {ind=4; break;} else {ind=5; suffind=5; break;}
+      }
+      if(act!=255)
+        prompt=strs[ind]+suffixes[suffind];
+      else
+        prompt=getInv();
+      return trg;
+    }
+
+    function process4(act) {
+      var trg=0, ind, suffind=0;
+      var suffixes=new Array("","mouse trap.","beer.","cheese.",
+                             "cat.","magic wand.");
+      var strs=new Array("You're going back to the lower hall.",
+                         "A kind of some telecommunication device. Perhaps it could be used as teleport?",
+			 "Bald man drinking beer and watching TV. You're wondering if it is not a Homer Simpson himself.",
+			 "It's too heavy.",
+			 "Nothing happened.",
+			 "You don't have any ",
+			 "You've tried to spook the man, but he just shook his head and murmured something about unpredictable effects of more than two gallons of beer.",
+			 "You put the cheese into the trap!",
+			 "You poured the Guinness beer onto the TV. It is sparkling and scrambling a while. Suddenly the programme is replaced with a view of familiar green Irish meadow! Now you only have to find out how to get through the solid TV screen.",
+			 "You wielded the magic wand in front of the TV. After a second the screen vanishes in a soft flash and the teleport to your sweet country is opened. Now you can finally get off this scary place! Congratulations, Leo B., you're the most inventive leprechaun in the world and surrounding dimensions!");
+      switch(act) {
+        case 10: trg=1; ind=0; break;
+        case 20: ind=1; break;
+	case 21: ind=2; break;
+	case 30: ind=3; break;
+	case 40:
+	  if(inventory[0] || inventory[5] || inventory[6])
+	    {ind=4; break;} else {ind=5; suffind=1; break;}
+	case 41: ind=6; break;
+	case 42:
+	  if(inventory[1])
+	    {ind=8; tvState=true; break;}
+	  else
+	    {ind=5; suffind=2; break;}
+	case 43:
+	  if(inventory[2]) {
+	    if(inventory[0]) {
+	        ind=7; inventory[0]=false; inventory[2]=false;
+		inventory[5]=true; break;
+	      } else {
+	        ind=4; break;
+	      }
+	  } else {ind=5; suffind=3; break;}
+        case 44:
+          if(inventory[3]) {ind=4; break;} else {ind=5; suffind=4; break;}
+        case 45:
+	  if(inventory[4]) {
+	    if(tvState) {
+	      ind=9; trg=2; break;
+	    } else {ind=4; break;}
+	  } else {ind=5; suffind=5; break;}
+      }
+      if(act!=255)
+        prompt=strs[ind]+suffixes[suffind];
+      else
+        prompt=getInv();
+      return trg;
+    }
+
+    function process5(act) {
+      var trg=0, ind, suffind=0;
+      var suffixes=new Array("","mouse trap.","beer.","cheese.",
+                             "cat.","magic wand.");
+      var strs=new Array("You're going back to the upper hall.",
+                         "A hellish black cat. Must be a real mouse-slayer.",
+			 "You took a cat. It sits happily upon your shoulder now.",
+			 "Nothing happened.",
+			 "You don't have any ",
+			 "You put the cheese into the trap!");
+      switch(act) {
+        case 10: trg=1; ind=0; break;
+        case 20: ind=1; break;
+	case 30: ind=2; inventory[3]=true; break;
+	case 40:
+	  if(inventory[0] || inventory[5] || inventory[6])
+	    {ind=3; break;} else {ind=4; suffind=1; break;}
+	case 41:
+          if(inventory[1]) {ind=3; break;} else {ind=4; suffind=2; break;}
+	case 42:
+	  if(inventory[2]) {
+	    if(inventory[0]) {
+	        ind=5; inventory[0]=false; inventory[2]=false;
+	        inventory[5]=true; break;
+	      } else {
+	        ind=3; break;
+	      }
+	  } else {ind=4; suffind=3; break;}
+        case 43:
+          if(inventory[3]) {ind=3; break;} else {ind=4; suffind=4; break;}
+        case 44:
+          if(inventory[4]) {ind=3; break;} else {ind=4; suffind=5; break;}
+      }
+      if(act!=255)
+        prompt=strs[ind]+suffixes[suffind];
+      else
+        prompt=getInv();
+      return trg;
+    }
+
+    function process6(act) {
+      var trg=0, ind, suffind=0;
+      var suffixes=new Array("","mouse trap.","beer.","cheese.",
+                             "cat.","magic wand.");
+      var strs=new Array("You're going back to the upper hall.",
+                         "A statuette of Harry Potter holding the magic wand, unfortunately it is too high to reach for you.",
+			 "A broken Harry Potter statuette on the floor. It seems to be useless, maybe except Harry's magic wand.",
+			 "A broken Harry Potter statuette on the floor.",
+			 "You cannot reach it!",
+			 "You took the Harry Potter's magic wand.",
+			 "You put the trap with the mouse on the floor. When the cat on your shoulder and mouse saw each other, a little apocalypse begun. Most of the room is destroyed after both of the animals flew off through the window. The Harry Potter's statue is now lieing broken on the floor.",
+			 "Nothing happened.",
+			 "You don't have any ",
+			 "You put the cheese into the trap!");
+      switch(act) {
+        case 10: trg=1; ind=0; break;
+	case 20:
+	  if(!statueBr) {
+	    ind=1; break;
+	  } else {
+	    if(!inventory[4]) ind=2; else ind=3;
+	    break;
+	  }
+	case 30:
+          if(!statueBr) {ind=4; break;} else {ind=5; inventory[4]=true; break;}
+	case 40:
+	  if(inventory[0] || inventory[5] || inventory[6]) {
+	    if(inventory[6] && inventory[3]) {
+	      ind=6; statueBr=true;
+	      inventory[6]=false; inventory[3]=false; break;
+	    } else {
+	      ind=7; break;
+	    }
+	  } else {
+	    ind=8; suffind=1; break;
+	  }
+	case 41:
+          if(inventory[1]) {ind=7; break;} else {ind=8; suffind=2; break;}
+	case 42:
+	  if(inventory[2]) {
+	    if(inventory[0]) {
+	        ind=8; inventory[0]=false; inventory[2]=false;
+	        inventory[5]=true; break;
+	      } else {
+	        ind=7; break;
+	      }
+	  } else {ind=4; suffind=3; break;}
+        case 43:
+          if(inventory[3]) {ind=7; break;} else {ind=8; suffind=4; break;}
+        case 44:
+          if(inventory[4]) {ind=7; break;} else {ind=8; suffind=5; break;}
+      }
+      if(act!=255)
+        prompt=strs[ind]+suffixes[suffind];
+      else
+        prompt=getInv();
+      return trg;
+    }
+  ]]>
+</script>
+
+<menu id="init" dtmf="true">
+  <prompt>
+    Welcome to the game 'Leo B. Goes home'!
+    What do you want to do now? <enumerate/>
+  </prompt>
+  <choice next="#info">
+    Hear info
+  </choice>
+  <choice next="#start">
+    Start the game
+  </choice>
+  <choice next="#quit">
+    Quit
+  </choice>
+
+  <noinput>
+    <prompt> What's up? Come on, make a choice from: <enumerate/> </prompt>
+  </noinput>
+  <nomatch>
+    <prompt> Beg your pardon? Try to make a choice from: <enumerate/> </prompt>
+  </nomatch>
+</menu>
+
+<form id="info">
+  <block>
+    'Leo B. Goes Home' is a simple adventure game. You are a little leprechaun
+    called Leo B., who was accidentaly summoned to a typical
+    American house, which is occupied by a typical American family. The task
+    of the game is to get off this weird place and transport yourself back to
+    your comfortable burrow in the middle of beautiful green Irish meadows.
+  </block>
+  <field name="answer">
+    <noinput> Hey, don't sleep! </noinput>
+    <nomatch> Say 'yes' or 'no'. </nomatch>
+    <prompt> Do you want to hear it once more? </prompt>
+    <grammar src="yesno.grxml"/>
+    <grammar src="exit.grxml"/>
+    <filled>
+      <if cond="answer == 'yes'">
+	<prompt> Ok, I will repeat it. </prompt>
+        <goto next="#info"/>
+      <elseif cond="answer == 'no'"/>
+        <prompt> Ok, let's go back. </prompt>
+	<goto next="#init"/>
+      <elseif cond="answer == 'exit'"/>
+	<goto next="#quit"/>
+      </if>
+    </filled>
+  </field>
+</form>
+
+<form id="start">
+  <block>
+    <prompt>
+      Let's start the game!
+      You appeared in a dark cellar. The last thing you remember is that
+      you were drinking an invisibility potion from your family wizard Crook
+      in order to hide before curious tourists on fiddle feast. The old Crook
+      must have mistaken it. It seems the potion teleported you to some
+      strange unfamiliar place instead of simply rendering you invisible. Now
+      you need to find a way back home.
+    </prompt>
+    <script>
+      <![CDATA[
+        inventory = new Array(7);
+	initInv();
+	tvState=false;
+	statueBr=false;
+      ]]>
+    </script>
+    <goto next="cellar.vxml#init"/>
+  </block>
+</form>
+
+<form id="quit">
+  <field name="answer">
+    <noinput> Hey, don't sleep! </noinput>
+    <nomatch> Say 'yes' or 'no' </nomatch>
+    <prompt> So you want to get out of here. Are you sure? </prompt>
+    <grammar src="yesno.grxml"/>
+    <filled>
+      <if cond="answer == 'yes'">
+	<prompt> It seems you really want to leave. Ok then, bye. </prompt>
+	<exit/>
+      <else/>
+	<prompt>
+          You've changed your mind? That's good, let's start again.
+	</prompt>
+	<goto next="#init"/>
+      </if>
+    </filled>
+  </field>
+</form>
+
+</vxml>
+

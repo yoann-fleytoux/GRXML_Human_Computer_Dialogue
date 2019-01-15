@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="hello world example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<var name="hi" expr="'Hello World!'"/>
+
+<form id="say_hi">
+  <block>
+    <prompt><value expr="hi"/></prompt>
+    <goto next="#say_goodbye"/>
+  </block>
+</form>
+
+<form id="say_goodbye">
+  <block>
+    Goodbye!
+  </block>
+</form>
+
+</vxml>

@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar version="1.0" root="computation" xml:lang="en">
+
+<meta name="description" content="grammar for calculator"/>
+<meta name="author" content="Annu Paganus and Guillaume Quenel"/>
+<meta name="copyright" content="free for non commercial purpose"/>
+
+<!--
+Speech Recognizer calculator
+
+
+Annu Paganus - Guillaume Quenel
+Abo Akademi University
+
+
+Copyright (c) 2005
+
+
+This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or any later version.
+
+This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-->
+
+
+<!-- Rule for different combinations of polite starting expressions -->
+<rule id="politness1">
+  <item repeat="0-1"> please </item>
+  <item repeat="0-1">I</item>
+  <item repeat="0-">
+      <ruleref uri="#what"/>
+  </item>
+
+  <item repeat="0-1">to</item>
+  <item repeat="0-1">calculate</item>
+</rule>
+
+<!-- Rule for different ending expressions -->
+<rule id="politness2">
+  <item repeat="0-1">
+    <one-of>
+      <item> please </item>
+      <item> thank you </item>
+      <item> thanks </item>
+      <item> is equal </item>
+      <item> is equal to</item>
+      <item> equals </item>
+      <item> together </item>
+    </one-of>
+  </item>
+</rule>
+
+
+<!-- The root rule for mixed initiative situations -->
+<rule id="computation" scope="public">
+  <tag>out.calc = new Object;</tag>
+
+  <ruleref uri="#politness1"/>
+  <item repeat="1-">
+  <one-of>
+   <item>
+         <item><!-- User is able to say only the first number -->
+           <ruleref uri="#thenumber"/>
+           <tag>out.calc.numa = meta.current().text;</tag>
+         </item>
+   </item>
+
+   <item>
+
+         <item><!-- User is able to say only the operation -->
+           <one-of>
+	       <item><ruleref uri="#op_no_order"/></item>
+	       <item><ruleref uri="#op_in_order"/></item>
+           </one-of>
+           <tag>out.calc.oper = meta.current().text;</tag>
+         </item>
+
+   </item>
+
+
+   <item>
+      <item>
+        <ruleref uri="#thenumber"/>
+        <tag>out.calc.numa = meta.current().text;</tag>
+      </item>
+      <item>
+        <one-of>
+	      <item><ruleref uri="#op_no_order"/></item>
+	      <item><ruleref uri="#op_in_order"/></item>
+        </one-of>
+        <tag>out.calc.oper = meta.current().text;</tag>
+      </item>
+      <item repeat="0-1">
+        <ruleref uri="#thenumber"/>
+        <tag>out.calc.numb = meta.current().text;</tag>
+      </item>
+   </item>
+
+   <item>
+      <item>
+        <ruleref uri="#op_no_order"/>
+        <tag>out.calc.oper = meta.current().text;</tag>
+      </item>
+      <item>
+        <ruleref uri="#thenumber"/>
+        <tag>out.calc.numa = meta.current().text;</tag>
+      </item>
+      <item>
+        <ruleref uri="#combine"/>
+      </item>
+      <item>
+        <ruleref uri="#thenumber"/>
+        <tag>out.calc.numb = meta.current().text;</tag>
+      </item>
+   </item>
+
+   <item>
+         <item>
+           <ruleref uri="#op_in_order"/>
+           <tag>out.calc.oper = meta.current().text;</tag>
+         </item>
+         <item>
+           <ruleref uri="#thenumber"/>
+           <tag>out.calc.numb = meta.current().text;</tag>
+         </item>
+         <item> from </item>
+         <item>
+           <ruleref uri="#thenumber"/>
+           <tag>out.calc.numa = meta.current().text;</tag>
+         </item>
+   </item>
+
+
+
+
+  </one-of>
+  </item>
+  <ruleref uri="#politness2"/>
+</rule>
+
+
+  <!-- The rule for the numbers between 0 to 99 -->
+  <rule id="thenumber" scope="public">
+    <one-of>
+      <item><ruleref uri="#ones" /><tag>out=Number(rules.ones);</tag></item> <!-- number is smaller than 10 -->
+      <item><ruleref uri="#tens" /><tag>out=Number(rules.tens);</tag></item> <!-- # is one of tens -->
+      <item><ruleref uri="#twos" /><tag>out=Number(rules.twos);</tag></item> <!-- 10 <= # < 20 -->
+      <item><ruleref uri="#tens" /><tag>out=Number(rules.tens);</tag> <!-- number is for example 20 4 = 24 -->
+            <ruleref uri="#ones" /><tag>out=Number(out)+Number(rules.ones);</tag>
+      </item>
+
+    </one-of>
+  </rule>
+
+  <rule id="ones">
+    <one-of>
+    <item>0</item>
+    <item>zero<tag>out=0</tag></item>
+    <item>1</item>
+    <item>one<tag>out=1</tag></item>
+    <item>2</item>
+    <item>two<tag>out=2</tag></item>
+    <item>3</item>
+    <item>three<tag>out=3</tag></item>
+    <item>4</item>
+    <item>four<tag>out=4</tag></item>
+    <item>5</item>
+    <item>five<tag>out=5</tag></item>
+    <item>6</item>
+    <item>six<tag>out=6</tag></item>
+    <item>7</item>
+    <item>seven<tag>out=7</tag></item>
+    <item>8</item>
+    <item>eight<tag>out=8</tag></item>
+    <item>9</item>
+    <item>nine<tag>out=9</tag></item>
+    </one-of>
+  </rule>
+
+  <rule id="twos">
+    <one-of>
+    <item>10</item>
+    <item>ten<tag>out=10</tag></item>
+    <item>11</item>
+    <item>eleven<tag>out=11</tag></item>
+    <item>12</item>
+    <item>twelve<tag>out=12</tag></item>
+    <item>13</item>
+    <item>thirteen<tag>out=13</tag></item>
+    <item>14</item>
+    <item>fourteen<tag>out=17</tag></item>
+    <item>15</item>
+    <item>fifteen<tag>out=15</tag></item>
+    <item>16</item>
+    <item>sixteen<tag>out=16</tag></item>
+    <item>17</item>
+    <item>seventeen<tag>out=17</tag></item>
+    <item>18</item>
+    <item>eighteen<tag>out=18</tag></item>
+    <item>19</item>
+    <item>nineteen<tag>out=19</tag></item>
+    </one-of>
+  </rule>
+
+  <rule id="tens">
+    <one-of>
+    <item>20</item>
+    <item>twenty<tag>out=20</tag></item>
+    <item>30</item>
+    <item>thirty<tag>out=30</tag></item>
+    <item>40</item>
+    <item>fourty<tag>out=40</tag></item>
+    <item>50</item>
+    <item>fifty<tag>out=50</tag></item>
+    <item>60</item>
+    <item>sixty<tag>out=60</tag></item>
+    <item>70</item>
+    <item>seventy<tag>out=70</tag></item>
+    <item>80</item>
+    <item>eighty<tag>out=80</tag></item>
+    <item>90</item>
+    <item>ninety<tag>out=90</tag></item>
+    </one-of>
+  </rule>
+
+<!-- The rule for getting the wanted operation from the user while the system is in system initiative state. -->
+<rule id="operation" scope="public">
+  <item repeat ="0-1">I</item>
+  <item repeat ="0-1">want</item>
+  <item repeat ="0-1">to</item>
+  <one-of>
+        <item><ruleref uri="#op_no_order"/></item>
+        <item><ruleref uri="#op_in_order"/></item>
+  </one-of>
+  <tag> out = meta.current().text;</tag>
+</rule>
+
+
+
+<!-- Operations in which order doesn't really matter. -->
+<rule id="op_no_order">
+  <one-of>
+      <item> plus </item>
+      <item> add <tag>out="plus"</tag></item>
+      <item> sum <tag>out="plus"</tag></item>
+
+      <item> multiply </item>
+      <item> times <tag>out="multiply"</tag></item>
+
+      <item> divided </item>
+      <item> divided by <tag>out="divided"</tag></item>
+      <item> divide <tag>out="divided"</tag></item>
+      <item> division <tag>out="divided"</tag></item>
+
+      <item> result </item>
+      <item> equals <tag>out="result"</tag></item>
+  </one-of>
+
+<!-- Operation minus in which the order matters in some case -->
+</rule>
+<rule id="op_in_order">
+  <one-of>
+     <item> minus </item>
+     <item> subtract <tag>out="minus"</tag></item>
+
+  </one-of>
+</rule>
+
+<!-- Rule for combining the numbers (Example: sum 4 [and] 6) -->
+<rule id="combine">
+   <one-of>
+      <item>and</item>
+      <item>with</item>
+      <item>to</item>
+      <item>by</item>
+      <item>plus</item>
+   </one-of>
+
+</rule>
+
+<!-- Compliments that are used in the beginning of the mixed initiative state. -->
+<rule id="what">
+<one-of>
+        <item> want </item>
+        <item> would like </item>
+        <item> could you </item>
+        <item> can you </item>
+        <item> what is </item>
+        <item> tell me </item>
+        <item> say </item>
+        <item> to know</item>
+        <item> please </item>
+</one-of>
+
+</rule>
+</grammar>

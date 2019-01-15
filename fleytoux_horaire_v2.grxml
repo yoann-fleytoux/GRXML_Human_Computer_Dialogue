@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://www.w3.org/2001/06/grammar" version="1.0" root="horaire" xml:lang="fr">
+
+	<meta name="description" content="Horaire"/>
+	<meta name="author" content="Yoann Fleytoux"/>
+
+	<rule id="horaire" scope="public">
+		<one-of>
+		<item> <ruleref uri="#main"/> </item>
+	    </one-of>
+		
+		<tag>       
+			out.H = rules.latest().H%24 ;
+			out.MN = rules.latest().MN%60 ;
+			out.NB_MN = rules.latest().NB_MN%1440 ;
+			
+			out.H_untouched = rules.latest().H ;
+			out.MN_untouched = rules.latest().MN ;
+			out.NB_MN_untouched = rules.latest().NB_MN ;
+			
+			out.text = rules.latest().text;
+		</tag>
+		
+	</rule>
+	
+	<!-- deux règles juste pour avoir facilement accés à comment on veut formater la sortie -->
+	<rule id = "main" >
+		<item>
+			<ruleref uri="#heure" />
+			<tag> 
+				out.H = rules.heure.H; 
+				out.MN = rules.heure.MN;
+				out.NB_MN = rules.heure.NB_MN;
+				out.text = rules.heure.text;
+			</tag>
+		</item>
+		
+		<item repeat="0-2">
+			<ruleref uri="#concepts_horaire" />
+			<tag>
+			out.text = out.text + rules.concepts_horaire.text;
+			</tag>
+		</item>
+			
+		<one-of>
+			<item repeat="0-1">
+				<ruleref uri="#diff" />
+				<tag>
+					out.text = out.text + rules.diff.text;
+				</tag>
+				<item>
+					<item repeat="0-1">
+						<ruleref uri="#concepts_horaire" />
+						<tag>
+							out.text = out.text + rules.concepts_horaire.text;
+						</tag>
+					</item>
+					<item repeat="1-2">
+						<ruleref uri="#minute" />
+						<tag> 
+							out.H = out.H - 1;
+							out.MN = out.MN+ 60 - rules.minute.MN;
+							out.NB_MN = out.NB_MN - rules.minute.NB_MN;
+							out.text = out.text + rules.minute.text;
+						</tag>
+					</item>
+				</item>
+			</item>
+			
+			<item repeat="0-1">
+				<item repeat="0-1">
+					<ruleref uri="#concepts_horaire" />
+					<tag>
+						out.text = out.text + rules.concepts_horaire.text;
+					</tag>
+				</item>
+				<item repeat="1-2">
+					<ruleref uri="#minute" />
+					<tag> 
+						out.H = out.H + rules.minute.H;
+						out.MN = out.MN + rules.minute.MN;
+						out.NB_MN = out.NB_MN + rules.minute.NB_MN;
+						out.text = out.text + rules.minute.text;
+					</tag>
+				</item>
+			</item>
+		</one-of>
+
+	</rule>
+	
+	<rule id="heure" scope="public">
+		<one-of>
+			<item>
+			<ruleref uri="grammaire_nombre_v3.grxml#nombre" />
+				<tag> out.H= rules.nombre.nb ; out.MN = 0; out.NB_MN = rules.nombre.nb*60 ; </tag>
+			</item>
+		
+			<item> midi      
+				<tag> out.H = 12 ; out.MN = 0 ; out.NB_MN = 12*60 ; </tag> 
+			</item>
+						
+			<item> minuit      
+				<tag> out.H = 24 ; out.MN = 0 ; out.NB_MN = 24*60 ; </tag> 
+			</item>
+			
+			<item> une      
+				<tag> out.H = 1 ; out.MN = 0 ; out.NB_MN = 60 ;  </tag> 
+			</item>
+		</one-of>
+		<tag> out.text = meta.current().text + " "; </tag>
+	</rule>
+	
+	<rule id= "concepts_horaire">
+		<one-of>
+			<item> heures      
+			</item>
+			<item> heure   
+			</item>
+			<item> le      
+			</item>
+			<item> et      
+			</item>
+			<item> et-      
+			</item>
+		</one-of>
+		<tag> out.text = meta.current().text + " "; </tag>
+	</rule>
+	
+	<rule id= "diff">
+		<item> moins      
+		</item>
+		<tag> out.text = meta.current().text + " "; </tag>
+	</rule>
+	
+	<!-- nombres de 1 a 59 -->
+	<rule id= "minute">
+		<one-of>
+		
+			<item>
+			<ruleref uri="grammaire_nombre_v3.grxml#nombre" />
+				<tag> out.H=0 ; out.MN = rules.nombre.nb ; out.NB_MN = rules.nombre.nb  </tag>
+			</item>
+			
+			<item> quart      
+				<tag> out.H=0 ;out.MN = 15 ; out.NB_MN = 15 </tag> 
+			</item>
+			
+			<item> demi      
+				<tag> out.H=0 ;out.MN = 30 ; out.NB_MN = 30 </tag> 
+			</item>
+		
+		</one-of>
+		<tag> out.text = meta.current().text + " "; </tag>
+	</rule>
+
+</grammar>

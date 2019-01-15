@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="document navigation example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+
+<link event="help">
+<grammar src="grammaire_aide.grxml" type="application/srgs+xml" />
+</link>
+
+<catch event="exit">
+  <prompt>  Aurevoir! </prompt>
+  <exit/>
+</catch>
+
+<link event="exit">
+  <grammar src="exit.grxml"/>
+</link>
+
+<!-- declaration des variables Javascript -->
+<script>
+       <!-- Activation/desactivation du mode TRACE -->
+		var mode_trace ="True";
+</script>
+
+<!-- start to interpret this file -->
+
+<form id="start">
+
+<!-- Champ/Slot NUMERO D'ABONNE -->
+<!-- TODO confirmation implicite (genre faire quand vous voulez supprimer? le 10 mai; vous voulez donc supprimer le rendez vous de 5h40 le 10 mai? non -> non le 10 mai ou non 5h40) -->
+<!-- pas fan des goto -->
+	<field name="num_abonne">
+
+		<prompt> Bonjour et Bienvenue sur le service de gestion 
+des agendas. Quel est votre numero d'abonne ? </prompt>
+
+		<!-- Appel a une grammaire externe -->
+		<grammar src="grammaire_num_ab_v2.grxml" type="application/srgs+xml"/>
+
+		<!-- Gestion des erreurs -->
+		<help> Donner un nombre compris entre 1 et 2500 </help>
+		<noinput> Je n'ai pas entendu. Pouvez-vous me preciser votre numero d'abonne ? </noinput>
+		<nomatch> Je n'ai pas compris. Pouvez-vous me donner votre numero d'abonne S.V.P ? </nomatch>
+
+		<!-- Comportement du systeme une fois ce champ rempli -->
+		<filled>
+			<if cond="num_abonne.nb &lt; 1">
+				Numero d'abonne <value expr="num_abonne.text" /> trop petit
+				<clear namelist="num_abonne" /> <!-- permet de recommencer le champ -->
+				<elseif cond="num_abonne.nb &gt; 2500"/>
+				Numero d'abonne <value expr="num_abonne.text" /> trop grand	
+				<clear namelist="num_abonne" />				
+				<else/>
+				Votre numero d'abonne est le <value expr="num_abonne.text" /> 
+				<if cond="mode_trace=='True'">
+				TRACE Valeur numero d'abonne  <value expr="num_abonne.nb" />
+				</if>
+				<goto next="orientation.vxml"/> 
+			</if>
+		</filled>
+	</field>
+  
+</form>
+
+</vxml>

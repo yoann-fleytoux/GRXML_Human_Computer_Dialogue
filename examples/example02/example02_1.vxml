@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="document navigation example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<!-- start to interpret this file -->
+
+<form id="start">
+  <var name="target"/>
+
+  <block>
+    <prompt> First form item is interpreted. </prompt>
+    <assign name="third" expr="true"/>
+      <!-- form item "third" will not be interpreted
+           because we assigned a value to its variable -->
+  </block>
+
+  <block name="third">
+    Third form item is interpreted.
+  </block>
+
+  <block name="second">
+    Second form item is interpreted.
+    <clear namelist="third"/>
+      <!-- form item "third" will be interpreted now
+           because we cleared its variable and it is the
+           first form item with unfilled variable -->
+  </block>
+
+  <block name="fourth">
+    Fourth form item is interpreted.
+    <assign name="target" expr="'fifth'"/>
+    <goto expritem="target"/>
+  </block>
+
+  <block name="sixth">
+    Sixth form item is interpreted.
+    <goto next="#another"/> <!-- go to another dialog -->
+  </block>
+
+  <block name="fifth">
+    Fifth form item is interpreted.
+  </block>
+</form>
+
+<form id="another">
+  <block name="a">
+    <prompt> Now we are in another dialog. </prompt>
+    <assign name="a" expr="'another2'"/>
+    <goto expr="'#'+a"/> <!-- go to even another dialog -->
+  </block>
+</form>
+
+<form id="another2">
+  <block>
+    Now we are in even another dialog.
+      <!-- we can omit prompt if no tags are inside -->
+    <goto next="example02_2.vxml"/> <!-- go to another document -->
+  </block>
+</form>
+
+</vxml>

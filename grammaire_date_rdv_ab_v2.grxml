@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- fichier grammaire_num_ab.grxml -->
+<!-- reconnaitre un nombre brut ou , lui attribuer une valeur numerique .nb -->
+<!-- tout en memorisant la suite de mots qui correspond .text -->
+
+<grammar version="1.0" root="date_rdv" xml:lang="fr">
+
+<meta name="description" content="grammaire date rendez vous"/>
+<meta name="author" content="Isabelle Ferrane"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<rule id="date_rdv" scope="public">
+<!-- out.nb = valeur numerique -->
+<!-- out.text = texte corrspondant au numero enonce -->
+<one-of>
+     <item> <ruleref uri="#filler_debut_phrase" /> 
+            <ruleref uri="grammaire_dates_v4_tag.grxml#Date_v4" />
+                     <tag> 
+                              <!--out.num_jour = rules.Date.num_jour;-->
+                              out.nb_jour = rules.Date_v4.nb_jour;
+                              out.nb_mois = rules.Date_v4.nb_mois;
+                              out.nb_annee = rules.Date_v4.nb_annee;
+                              out.text = meta.Date_v4.text 
+                     </tag>
+     </item>
+     <item> <ruleref uri="grammaire_dates_v4_tag.grxml#Date_v4" /> 
+                     <tag> 
+                              <!--out.num_jour = rules.Date.num_jour;-->
+                              out.nb_jour = rules.Date_v4.nb_jour;
+                              out.nb_mois = rules.Date_v4.nb_mois;
+                              out.nb_annee = rules.Date_v4.nb_annee;
+                              out.text = meta.Date_v4.text 
+                     </tag>
+      </item>
+</one-of>
+</rule>
+
+<rule id="filler_debut_phrase">
+      <one-of>
+              <item> c est  le </item>
+              <item> mon rendez-vous est le </item>
+              <item> le </item>
+      </one-of>
+</rule>
+</grammar>

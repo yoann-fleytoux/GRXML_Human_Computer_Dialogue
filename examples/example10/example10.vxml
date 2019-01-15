@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="DTMF grammar and script example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<script> <![CDATA[
+  function isInteger (num) {
+    return (num - Math.floor(num) == 0);
+  }
+
+  function prime(num) {
+    if (num < 2) return 1;
+
+    if (isInteger (num / 2)) return 2;
+
+    var t = eval (Math.floor(Math.sqrt(num)));
+    for (var i = 1; i <= t/2; i++) {
+      var p = 2*i + 1;
+      if (isInteger (num/p)) return p;
+    }
+    return 0;
+  }
+]]></script>
+
+<form id="form">
+  <field name="number">
+    <nomatch>
+      Please use your telephone keyboard. If you use any of the
+      standard OptimTalk input components, the telephone keyboard
+      can be simulated by function keys F1 to F12.
+      <reprompt/>
+    </nomatch>
+    <nomatch count="2">
+      Please use your telephone keyboard to enter a positive whole
+      number.
+    </nomatch>
+    <nomatch count="3">
+      Please learn what numbers mean first. I am giving up. Bye.
+      <exit/>
+    </nomatch>
+
+    <prompt>
+      Use your telephone keyboard and type a positive whole number
+      with maximum ten digits. Finish the typing with #. Then I'll
+      tell you if it is a prime number. The telephone keyboard
+      can be simulated by function keys F1 to F12.
+    </prompt>
+
+    <grammar root="main" mode="dtmf">
+      <rule id="main" scope="public">
+        <tag>out = 0;</tag>
+        <item repeat="1-10">
+          <ruleref uri="#num"/>
+           <tag> out = out * 10 + parseInt(rules.num) </tag>
+        </item>
+      </rule>
+      <rule id="num">
+        <one-of>
+          <item>1</item>
+          <item>2</item>
+          <item>3</item>
+          <item>4</item>
+          <item>5</item>
+          <item>6</item>
+          <item>7</item>
+          <item>8</item>
+          <item>9</item>
+          <item>0</item>
+        </one-of>
+      </rule>
+    </grammar>
+
+    <filled>
+      <var name="divisor" expr="prime(number)"/>
+      <if cond="divisor == 0">
+        <prompt>
+          <value expr="number"/> is a prime number.
+        </prompt>
+      <elseif cond="divisor == 1"/>
+        <prompt>
+          <value expr="number"/> is not a prime number by definition.
+        </prompt>
+      <else/>
+        <prompt>
+          <value expr="number"/> is not a prime number, it can be divided by
+          <value expr="divisor"/>.
+        </prompt>
+      </if>
+    </filled>
+  </field>
+</form>
+
+</vxml>

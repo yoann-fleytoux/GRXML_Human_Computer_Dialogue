@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml" application="config.vxml">
+
+<meta name="description" content="Iterated Prisoner's Dilemma"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<!-- see config.vxml for instuctions -->
+
+<!-- links -->
+<link event="help">
+  <grammar src="help.grxml"/>
+</link>
+
+<!-- global reactions on some common situations -->
+<help> Sorry, no help available </help>
+<noinput> Hey, don't sleep and say something! </noinput>
+<nomatch> I didn't understand you. </nomatch>
+<nomatch count="4">
+  Sorry, I don't understand again. I am giving up. Good Bye.
+  <log>***DO NOT UNDERSTAND USER, THE GAME IS INCOMPLETE***</log>
+  <exit/>
+</nomatch>
+<catch event="connection.disconnect.hangup">
+  <log>***USER HUNG UP, THE GAME IS INCOMPLETE***</log>
+</catch>
+
+<!-- some global variables -->
+<var name="iterNo" expr="0"/>
+  <!-- iteration number -->
+<var name="totalPriceUser" expr="0"/>
+  <!-- total price achieved by the user -->
+<var name="totalPriceComp" expr="0"/>
+  <!-- total price achieved by the computer -->
+
+<!-- the interpretation starts with this form -->
+<form id="start">
+  <block>
+    <prompt>Welcome to the iterative prisoner's dilema game.</prompt>
+    <prompt>We will play <value expr="iterCount"/> iterations.</prompt>
+    <prompt>Probability of noise is <value expr="noiseProb"/>.</prompt>
+    <prompt>If you need help, say help at any time.</prompt>
+    <goto next="#new_game"/>
+  </block>
+</form>
+
+<form id="new_game">
+  <field name="yesno">
+    <prompt>Do you want to start the game?</prompt>
+    <grammar src="yesno.grxml"/>
+
+    <filled>
+      <if cond="yesno == true">
+        <!-- user wants to start the game -->
+
+        <log>============</log>
+        <log>Game started</log>
+        <log>============</log>
+
+        Let's start!
+        <goto next="#game_move"/>
+      <else/>
+        <!-- user does not want to start the game -->
+        OK, you can play the game later. Bye.
+        <exit/>
+      </if>
+    </filled>
+
+    <help>Say 'yes' or 'no'.</help>
+    <nomatch>
+      I didn't understand you. Expected answers are 'yes' or 'no'
+    </nomatch>
+  </field>
+</form>
+
+<form id="game_move">
+  <block>
+    <!-- increase the iteration number and report it to the user -->
+    <assign name="iterNo" expr="iterNo+1"/>
+    <prompt>
+      Iteration <value expr="iterNo"/>.
+    </prompt>
+
+    <!-- play for computer -->
+    <script> <![CDATA[
+      if (Math.random() < noiseProb) {
+        // incorporate the noise
+        compAnswers.push (!computerStrategy());
+      }
+      else {
+        compAnswers.push (computerStrategy());
+      }
+    ]]> </script>
+  </block>
+
+  <field name="cooperation">
+    <prompt>Do you want to cooperate?</prompt>
+    <grammar src="yesno.grxml"/>
+
+    <filled>
+      <!-- user specified his/her 'move' -->
+
+      <!-- store the user's move -->
+      <script>
+        userAnswers.push (cooperation);
+      </script>
+    </filled>
+
+    <help>Say 'yes' if you want to cooperate, say 'no' otherwise.</help>
+    <noinput>Hey, don't sleep! Say 'yes' or 'no'.</noinput>
+    <nomatch>
+      I didn't understand you. Expected answers are 'yes' or 'no'.
+    </nomatch>
+  </field>
+
+  <block>
+    <!-- calculate and report the results of this iteration to the user -->
+    <if cond="userAnswers[userAnswers.length-1] == true &amp;&amp;
+              compAnswers[compAnswers.length-1] == true">
+      <assign name="totalPriceUser" expr="totalPriceUser + price2Coop"/>
+      <assign name="totalPriceComp" expr="totalPriceComp + price2Coop"/>
+      <prompt>Computer cooperates as well.</prompt>
+      <prompt>You both got <value expr="price2Coop"/> years.</prompt>
+
+    <elseif cond="userAnswers[userAnswers.length-1] == false &amp;&amp;
+              compAnswers[compAnswers.length-1] == true"/>
+      <assign name="totalPriceUser" expr="totalPriceUser + price1NotCoop"/>
+      <assign name="totalPriceComp" expr="totalPriceComp + price1Coop"/>
+      <prompt>Computer cooperates.</prompt>
+      <prompt><value expr="price1NotCoop"/> years for you,
+              <value expr="price1Coop"/> years for computer.</prompt>
+
+    <elseif cond="userAnswers[userAnswers.length-1] == true &amp;&amp;
+              compAnswers[compAnswers.length-1] == false"/>
+      <assign name="totalPriceUser" expr="totalPriceUser + price1Coop"/>
+      <assign name="totalPriceComp" expr="totalPriceComp + price1NotCoop"/>
+      <prompt>Computer decided to defect.</prompt>
+      <prompt><value expr="price1Coop"/> years for you,
+              <value expr="price1NotCoop"/> years for computer.</prompt>
+
+    <else/>
+      <!-- userAnswers[userAnswers.length-1] == false &amp;&amp;
+           compAnswers[compAnswers.length-1] == false"> -->
+      <assign name="totalPriceUser" expr="totalPriceUser + price2NotCoop"/>
+      <assign name="totalPriceComp" expr="totalPriceComp + price2NotCoop"/>
+      <prompt>Computer defects as well.</prompt>
+      <prompt>You both got <value expr="price2NotCoop"/> years.</prompt>
+    </if>
+
+    <!-- log the answer -->
+    <log>
+      Iteration <value expr="iterNo"/>,
+      U: <value expr="userAnswers[userAnswers.length-1]"/>
+      C: <value expr="compAnswers[compAnswers.length-1]"/>
+    </log>
+
+    <if cond="iterNo == iterCount">
+      <goto next="#game_eval"/>
+    <else/>
+      <goto next="#game_move"/>
+    </if>
+  </block>
+
+</form>
+
+<form id="game_eval">
+  <block>
+    <!-- report final results -->
+    <prompt>The game is finished.</prompt>
+    <prompt>You got <value expr="totalPriceUser"/> years.</prompt>
+    <prompt>Computer got <value expr="totalPriceComp"/> years.</prompt>
+    <prompt>I hope you enjoyed the game. Goodbye.</prompt>
+    <log>
+      U total: <value expr="totalPriceUser"/>
+      C total: <value expr="totalPriceComp"/>
+    </log>
+  </block>
+</form>
+
+</vxml>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar version="1.0" xml:lang="en">
+
+  <meta name="description" content="grammar for description of a pizza"/>
+  <meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+  <meta name="copyright" content="free for any purpose"/>
+
+  <rule id="number" scope="public">
+    <one-of>
+      <item> a <tag>out=1</tag></item>
+      <item> one <tag>out=1</tag></item>
+      <item> 1 </item>
+      <item> two <tag>out=2</tag></item>
+      <item> 2 </item>
+      <item> three <tag>out=3</tag></item>
+      <item> 3 </item>
+      <item> four <tag>out=4</tag></item>
+      <item> 4 </item>
+      <item> five <tag>out=5</tag></item>
+      <item> 5 </item>
+    </one-of>
+  </rule>
+
+  <rule id="size" scope="public">
+    <one-of>
+      <item><ruleref uri="#size_small"/><tag>out="small"</tag></item>
+      <item><ruleref uri="#size_medium"/><tag>out="medium"</tag></item>
+      <item><ruleref uri="#size_big"/><tag>out="big"</tag></item>
+    </one-of>
+    <item repeat="0-1"> size </item>
+  </rule>
+
+  <rule id="size_small">
+    small
+  </rule>
+
+  <rule id="size_medium">
+    <one-of>
+      <item> average </item>
+      <item> medium </item>
+      <item> normal </item>
+    </one-of>
+  </rule>
+
+  <rule id="size_big">
+    <one-of>
+      <item> big </item>
+      <item> large </item>
+    </one-of>
+  </rule>
+
+  <rule id="toppings" scope="public">
+    <tag> out = new Array; </tag>
+    <item repeat="1-">
+      <ruleref uri="#topping"/>
+      <tag> out.push(rules.topping); </tag>
+    </item>
+  </rule>
+
+  <rule id="topping" scope="public">
+    <one-of>
+      <item> cheese </item>
+      <item> ham </item>
+      <item> pepperoni </item>
+      <item> eggs </item>
+      <item> anchovies </item>
+      <item> mushrooms </item>
+    </one-of>
+  </rule>
+
+</grammar>

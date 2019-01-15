@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar version="1.0" root="order" xml:lang="en">
+
+  <meta name="description" content="grammar for ordering a pizza and a drink"/>
+  <meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+  <meta name="copyright" content="free for any purpose"/>
+
+  <rule id="order" scope="public">
+    <tag>out.pizza = new Object;</tag>
+    <item repeat="1-">
+      <one-of>
+        <item>
+          <ruleref uri="drink.grxml#drink"/>
+          <tag>out.drink = rules.drink</tag>
+        </item>
+
+        <item>
+          <ruleref uri="pizza.grxml#number"/>
+          <tag>out.pizza.number = rules.number</tag>
+        </item>
+
+        <item>
+          <ruleref uri="pizza.grxml#size"/>
+          <tag>out.pizza.size = rules.size</tag>
+        </item>
+
+        <item>
+          <ruleref uri="pizza.grxml#topping"/>
+          <tag>
+            if (typeof out.pizza.topping != "object") out.pizza.topping = new Array;
+            out.pizza.topping.push (rules.topping);
+          </tag>
+        </item>
+      </one-of>
+    </item>
+  </rule>
+
+</grammar>

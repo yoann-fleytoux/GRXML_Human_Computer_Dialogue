@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- fichier grammaire_date.grxml -->
+
+<grammar version="1.0" root="Date_v4" xml:lang="fr" >
+
+<meta name="description" content="date_version_1"/>
+<meta name="author" content="I. FERRANE"/>
+<meta name="copyright" content="free for any purpose"/>
+
+
+<!-- regle Date_v4 se reecrit Jour [+ NB_Jour [ + Mois [+ Annee]]] -->
+<!-- ============================================================= -->
+
+<!-- out represente la structure qui contient le resultat de l'interpretation d'une date-->
+<!-- out.text represente le mot ou la suite de mot qui correspond a la grammaire, le champ texte est predefini -->
+<!-- out.att represent un champ de nom att, dans lequel on stocke une valeur numerique ou string -->
+
+     <rule id = "Date_v4" scope = "public">
+           <item> <ruleref uri="#Jour"/>      
+                           <tag> out.text = rules.Jour.text ;
+                           </tag>
+           </item>
+           <item repeat="0-1">
+                 <ruleref uri="#NB_Jour"/> 
+                          <tag> out.text = out.text + " " + rules.NB_Jour.text;
+                                out.nb_jour = rules.NB_Jour.nb_jour;
+                          </tag>
+                 <item repeat="0-1"> 
+                       <ruleref uri="#Mois"/>  
+                                <tag> out.text = out.text + " " + rules.Mois.text; 
+                                      out.nb_mois = rules.Mois.nb_mois;
+                                </tag>
+                       <item repeat="0-1"> 
+                             <ruleref uri="#Annee"/> 
+                                      <tag> out.text = out.text + " " + rules.Annee.text; 
+                                            out.nb_annee = rules.Annee.nb_annee;
+                                      </tag>
+                       </item>
+                 </item>
+           </item>
+     </rule>
+     <!-- la valeur du champ text est obtenue par concatenation (+) des sous-chaines recuperees -->
+     <!-- par les regles activees -->
+
+     <!-- regle Jour assimilable a une classe de mots -->
+     <!-- =========================================== -->
+     <rule id="Jour">
+                <one-of>
+                        <item> lundi </item>
+                        <item> mardi </item>
+                        <item> mercredi </item>
+                        <item> jeudi </item>
+                        <item> vendredi </item>
+                        <item> samedi </item>
+                        <item> dimanche </item>
+                </one-of>
+
+                <!-- meta.current().text ecriture generique qui recupere le texte associe a la partie -->
+                <!-- utilisee pour la reecriture, evite d'voir un tag out.text a chaque ligne -->
+                <tag> out.text = meta.current().text </tag>
+     </rule>
+
+     <!-- regle NB_Jour assimilable a une classe de mots -->
+     <!-- ============================================== -->
+     <rule id="NB_Jour">
+                <one-of>
+                        <item> premier <tag> out.nb_jour = 1; </tag> </item>
+                        <item> deux    <tag> out.nb_jour = 2; </tag></item>
+                        <item> trois   <tag> out.nb_jour = 3; </tag></item>
+                        <item> quatre  <tag> out.nb_jour = 4; </tag></item>
+                        <item> cinq    <tag> out.nb_jour = 5; </tag></item>
+                        <item> six     <tag> out.nb_jour = 6; </tag></item>
+                        <item> sept    <tag> out.nb_jour = 7; </tag></item>
+                        <item> huit    <tag> out.nb_jour = 8; </tag></item>
+                        <item> neuf    <tag> out.nb_jour = 9; </tag></item>
+                        <item> dix     <tag> out.nb_jour = 10; </tag></item>
+                        <item> onze    <tag> out.nb_jour = 11; </tag></item>
+                        <item> douze   <tag> out.nb_jour = 12; </tag></item>
+                        <item> treize  <tag> out.nb_jour = 13; </tag></item>
+                        <item> quatorze      <tag> out.nb_jour = 14; </tag></item>
+                        <item> quinze        <tag> out.nb_jour = 15; </tag></item>
+                        <item> seize         <tag> out.nb_jour = 16; </tag></item>
+                        <item> dix-sept      <tag> out.nb_jour = 17; </tag></item>
+                        <item> dix-huit      <tag> out.nb_jour = 18; </tag></item>
+                        <item> dix-neuf      <tag> out.nb_jour = 19; </tag></item>
+                        <item> vingt         <tag> out.nb_jour = 20; </tag></item>
+                        <item> vingt-et-un   <tag> out.nb_jour = 21; </tag></item>
+                        <item> vingt-deux    <tag> out.nb_jour = 22; </tag></item>
+                        <item> vingt-trois   <tag> out.nb_jour = 23; </tag></item>
+                        <item> vingt-quatre  <tag> out.nb_jour = 24; </tag></item>
+                        <item> vingt-cinq    <tag> out.nb_jour = 25; </tag></item>
+                        <item> vingt-six     <tag> out.nb_jour = 26; </tag></item>
+                        <item> vingt-sept    <tag> out.nb_jour = 27; </tag></item>
+                        <item> vingt-huit    <tag> out.nb_jour = 28; </tag></item>
+                        <item> vingt-neuf    <tag> out.nb_jour = 29; </tag></item>
+                        <item> trente        <tag> out.nb_jour = 30; </tag></item>
+                        <item> trente-et-un  <tag> out.nb_jour = 31; </tag></item>
+                </one-of>
+                <!-- meta.current().text ecriture generique qui recupere le texte associe a la partie -->
+                <!-- utilisee pour la reecriture, evite d'voir un tag out.text a chaque ligne -->
+                <tag> out.text = meta.current().text </tag>
+     </rule>
+
+     <!-- regle Mois assimilable a une classe de mots -->
+     <!-- =========================================== -->
+     <rule id="Mois">
+                <one-of>
+                        <item> janvier               <tag> out.nb_mois = 1; </tag> </item>
+                        <item> fevrier               <tag> out.nb_mois = 2; </tag></item>
+                        <item> mars                  <tag> out.nb_mois = 3; </tag></item>
+                        <item> avril                 <tag> out.nb_mois = 4; </tag></item>
+                        <item> mai                   <tag> out.nb_mois = 5; </tag></item>
+                        <item> juin                  <tag> out.nb_mois = 6; </tag></item>
+                        <item> juillet               <tag> out.nb_mois = 7; </tag></item>
+                        <item> aout                  <tag> out.nb_mois = 8; </tag></item>
+                        <item> septembre             <tag> out.nb_mois = 9; </tag></item>
+                        <item> octobre               <tag> out.nb_mois = 10; </tag></item>
+                        <item> novembre              <tag> out.nb_mois = 11; </tag></item>
+                        <item> decembre              <tag> out.nb_mois = 12; </tag></item>
+                </one-of>
+                <!-- meta.current().text ecriture generique qui recupere le texte associe a la partie -->
+                <!-- utilisee pour la reecriture, evite d'voir un tag out.text a chaque ligne -->
+                <tag> out.text = meta.current().text </tag>
+	</rule>
+
+     <!-- regle Annee assimilable a une classe de mots -->
+     <!-- =========================================== -->
+      <rule id="Annee">      
+               <one-of>
+                       <item> deux mille treize  <tag> out.nb_annee = 2013; </tag></item>
+                       <item> deux mille quatorze <tag> out.nb_annee = 2014; </tag></item>
+                       <item> deux mille quinze    <tag> out.nb_annee = 2015; </tag></item>
+                       <item> deux mille seize    <tag> out.nb_annee = 2016; </tag></item>
+                       <item> deux mille dix sept    <tag> out.nb_annee = 2017; </tag></item>
+               </one-of>
+               <!-- meta.current().text ecriture generique qui recupere le texte associe a la partie -->
+                <!-- utilisee pour la reecriture, evite d'voir un tag out.text a chaque ligne -->
+               <tag> out.text = meta.current().text </tag>
+      </rule>
+
+</grammar>

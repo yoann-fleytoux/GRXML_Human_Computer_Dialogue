@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="subdialog and event handling example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<form id="start">
+  <block name="answer">
+    Welcome. Before we start space ship pilot exams, we need to know whether
+    you are concentrated.
+  </block>
+
+  <subdialog name="sleepy" src="#test">
+    <filled>
+      <if cond="sleepy.answer=='yes'">
+        So you are sleepy. Better come another day. Bye.
+      <else/>
+        You seem to be concentrated. We can start!
+      </if>
+    </filled>
+  </subdialog>
+
+  <catch event="slow">
+    You have slow reactions. Better come another day. See you later.
+    <exit/>
+  </catch>
+
+  <catch event="not_smart">
+    You are not able to answer simple questions. Better don't try to
+    pilot a spaceship. Bye.
+    <exit/>
+  </catch>
+</form>
+
+<form id="test">
+  <field name="answer">
+    <noinput> <return event="slow"/> </noinput>
+    <nomatch> say 'yes' or 'no' </nomatch>
+    <nomatch count="2"> answer 'yes' or 'no', please </nomatch>
+    <nomatch count="3"> <return event="not_smart"/> </nomatch>
+
+    <prompt timeout="2s"> Are you sleepy? </prompt>
+    <grammar src="yesno.grxml"/>
+
+    <filled>
+      <return namelist="answer"/>
+    </filled>
+  </field>
+</form>
+
+</vxml>

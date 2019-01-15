@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="mapping of semantics to slots, filled and log example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<!-- very useful script for debugging - dumps value of a variable -->
+<script> <![CDATA[
+  function dump (v, name) {
+    var out = "";
+    try {
+      if (typeof v == "undefined") {
+        out = name + ": undefined\n";
+      }
+      else if (typeof v == "number") {
+        out = name + ": " + v + "\n";
+      }
+      else if (typeof v == "boolean") {
+        out = name + ": " + v + "\n";
+      }
+      else if (typeof v == "string") {
+        out = name + ": \"" + v + "\"\n";
+      }
+      else if (typeof v == "object") {
+        if (v == null) { // null
+          out = name + ": null\n";
+        }
+        else { // object or array
+          for (var prop in v) {
+            if (v.length!==undefined) {
+              // it is an array
+              if (prop != "") { // fix for multidimensional arrays
+                out = out + dump (v[prop], name+"["+prop+"]");
+              }
+            }
+            else {
+              // it is an "normal" object
+              out = out + dump (v[prop], name+"."+prop);
+            }
+          }
+        }
+      }
+    }
+    catch (e) {
+    }
+    return out;
+  }
+]]> </script>
+
+<form id="start">
+  <nomatch>
+    <prompt> I didn't understand you </prompt>
+    <log expr="(new Date()).toLocaleString()"> nomatch event occured </log>
+  </nomatch>
+
+  <grammar src="order.grxml"/>
+
+  <initial name="mixed">
+    I want the following information from you: drink type, number of pizzas,
+    size of pizzas and topping of pizzas. Say only isolated words like 'sprite
+    big cheese ham three'
+  </initial>
+
+  <field name="drink" cond="false"/> <!-- will be never visited -->
+  <filled namelist="drink">
+    <prompt> You specified drink. </prompt>
+  </filled>
+
+  <field name="pizza" cond="false"/> <!-- will be never visited -->
+
+  <field name="pizzanumber" slot="pizza.number" cond="false"/> <!-- will be never visited -->
+  <filled namelist="pizzanumber">
+    <prompt> You specified number of your pizzas. </prompt>
+  </filled>
+
+  <field name="pizzasize" slot="pizza.size" cond="false"/> <!-- will be never visited -->
+  <filled namelist="pizzasize">
+    <prompt> You specified size of your pizzas. </prompt>
+  </filled>
+
+  <field name="pizzatopping" slot="pizza.topping" cond="false"/> <!-- will be never visited -->
+  <filled namelist="pizzatopping">
+    <prompt> You specified topping of your pizzas. </prompt>
+  </filled>
+
+  <block>
+    <prompt> Dump of variable pizza: </prompt>
+    <prompt> <value expr="dump(pizza, 'pizza')"/> </prompt>
+    <prompt> Dump of variable drink: </prompt>
+    <prompt> <value expr="dump(drink, 'drink')"/> </prompt>
+  </block>
+</form>
+
+</vxml>

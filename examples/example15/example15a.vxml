@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="transfer example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<menu dtmf="true">
+  <prompt>
+    Welcome to the main manu. Select one of the following actions:
+    <enumerate>
+      Press <value expr="_dtmf"/> for <value expr="_prompt"/>
+    </enumerate>
+  </prompt>
+  <choice next="#blind">
+    blind transfer
+  </choice>
+  <choice next="#bridge">
+    bridge transfer
+  </choice>
+</menu>
+
+<form id="blind">
+  <transfer name="t" dest="tel:n/a" connecttimeout="10s" bridge="false">
+    <prompt>
+       You will be transferred and never get back.
+    </prompt>
+  </transfer>
+</form>
+
+<form id="bridge">
+  <transfer name="t" dest="tel:n/a" connecttimeout="10s" maxtime="20s" bridge="true">
+    <prompt>
+       You will be transferred. You will get back when the call is finished or after 20s.
+    </prompt>
+
+    <filled>
+      <if cond="t == 'busy'">
+        The line is busy. Please call again later.
+      <elseif cond="t == 'noanswer'"/>
+        The call has not been answered. Please call again later.
+      <else/>
+        Transfer finished with the following result: <value expr="t"/>
+      </if>
+    </filled>
+  </transfer>
+
+  <block>
+    That's all!
+  </block>
+</form>
+
+</vxml>

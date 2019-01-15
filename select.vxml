@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="document navigation example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+
+<link event="help">
+<grammar src="grammaire_aide.grxml" type="application/srgs+xml" />
+</link>
+
+<catch event="exit">
+  <prompt>  Aurevoir! </prompt>
+  <exit/>
+</catch>
+
+<link event="exit">
+  <grammar src="exit.grxml"/>
+</link>
+
+<!-- declaration des variables Javascript -->
+<script>
+       <!-- Activation/desactivation du mode TRACE -->
+		var mode_trace ="True";
+</script>
+
+<!-- start to interpret this file -->
+
+<form id="select">
+	<!--  voir exemple dialogue 1--> 
+	<!--  voir exemple dialogue 2--> 
+  <!-- Champ/Slot choix action -->
+	<field name="date_rendezvous">
+
+		<prompt> Quel date souhaitez-vous consulter? </prompt>
+
+		 <!-- Appel a une grammaire externe -->
+	 <grammar src="grammaire_dates_v3.grxml" type="application/srgs+xml"/>
+
+         <!-- Gestion des erreurs -->
+        <help> Donner une date au format écrit </help>
+        <noinput> Je n'ai pas entendu. Pouvez-vous me preciser la date de votre rendez-vous ? </noinput>
+		<nomatch> Je n'ai pas compris. Pouvez-vous me donner la date de votre rendez-vous S.V.P ? </nomatch>
+		
+		 <!-- Comportement du systeme apres confirmation/infirmation --> 
+         <!-- OK ==> On sort ou on passe a une autre sous-tache -->
+         <!-- NOK ==> On efface tout et on recommence --> 
+
+         <filled>
+                 <!-- Comportement si le mode TRACE est active --> 
+
+                 <if cond="mode_trace=='True'">
+				   TRACE Valeur  <value expr="date_rendezvous.nb_jour" /> <value expr="date_rendezvous.num_mois" /> <value expr="date_rendezvous.nb_annee" />
+				 </if>
+         </filled>
+
+	</field>
+	
+	<!-- Champ/Slot choix action -->
+	<field name="periode_rendezvous">
+
+		<prompt> Quel periode souhaitez-vous consulter? </prompt>
+
+		 <!-- Appel a une grammaire externe -->
+	 <grammar src="periode_grammaire.grxml" type="application/srgs+xml"/>
+
+         <!-- Gestion des erreurs -->
+        <help> matin/aprem/soir </help>
+        <noinput> Je n'ai pas entendu. Pouvez-vous me preciser la date de votre rendez-vous ? </noinput>
+		<nomatch> Je n'ai pas compris. Pouvez-vous me donner la date de votre rendez-vous S.V.P ? </nomatch>
+		
+		 <!-- Comportement du systeme apres confirmation/infirmation --> 
+         <!-- OK ==> On sort ou on passe a une autre sous-tache -->
+         <!-- NOK ==> On efface tout et on recommence --> 
+
+         <filled>
+				 <!-- select date,heure from  agenda--> 
+				<prompt> Vous avez bien un rendez-vous le <value expr="date_rendezvous.text" /> durant le  <value expr="periode_rendezvous.text" /> </prompt>
+				<if cond="periode_rendezvous.result == '0'">
+					<prompt> Le rendezvous est a huit heure </prompt>
+				</if>
+				<if cond="periode_rendezvous.result == '1'">
+					<prompt> Le rendezvous est a quatorze heure </prompt> 
+				</if>
+				<if cond="periode_rendezvous.result == '2'">
+					<prompt> Le rendezvous est a vingt heure </prompt> 
+				</if>
+                 <!-- Comportement si le mode TRACE est active --> 
+                 <if cond="mode_trace=='True'">
+				   TRACE Valeur  <value expr="periode_rendezvous.text" />
+				 </if>
+         </filled>
+
+	</field>
+	<goto next="orientation.vxml"/>
+</form>
+
+</vxml>

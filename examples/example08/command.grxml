@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar root="command" version="1.0" xml:lang="en">
+
+  <meta name="description" content="grammar with simple commands"/>
+  <meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+  <meta name="copyright" content="free for any purpose"/>
+
+  <rule id="command" scope="public">
+    <ruleref uri="#action"/> <ruleref uri="#object"/>
+    <tag> out.action = rules.action; out.object = rules.object; </tag>
+  </rule>
+
+  <rule id="action">
+    <one-of>
+      <item> open </item>
+      <item> close </item>
+      <item> delete </item>
+      <item> move </item>
+    </one-of>
+  </rule>
+
+  <rule id="object">
+    <item repeat="0-1">
+      <one-of>
+        <item> the </item>
+        <item> a </item>
+      </one-of>
+    </item>
+    <one-of>
+      <item> window <tag>out = "window"</tag> </item>
+      <item> file <tag>out = "file"</tag> </item>
+      <item> menu <tag>out = "menu"</tag> </item>
+    </one-of>
+  </rule>
+
+</grammar>

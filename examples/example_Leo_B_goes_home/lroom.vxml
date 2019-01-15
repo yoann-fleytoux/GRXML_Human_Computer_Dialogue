@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml" application="main.vxml">
+
+<meta name="author"
+      content="Vit Novacek, Faculty of Informatics, Masaryk University Brno,
+               Czaech Republic"/>
+<meta name="copyright"
+      content="Copyright (c) 2004 Vit Novacek; You can redistribute and/or modify
+               this file under the terms of the GNU General Public License"/>
+
+<form id="init">
+  <block>
+    <prompt>
+      You're in the living room. There is sitting a man on the sofa. He is
+      almost asleep while watching TV and drinking beer.
+    </prompt>
+  </block>
+  <field name="action">
+    <noinput> Come on, you need to get home! </noinput>
+    <nomatch> Try to say something else. </nomatch>
+    <grammar src="lroom.grxml"/>
+    <grammar src="exit.grxml"/>
+  </field>
+  <filled namelist="action">
+    <if cond="action == 'exit'">
+      <goto next="#exit"/>
+    <else/>
+      <script>
+	<![CDATA[
+	  var intact=parseInt(action,10);
+	  trigger=process4(intact);
+	]]>
+      </script>
+      <prompt><value expr="prompt"/></prompt>
+      <if cond="trigger==1">
+        <goto next="lhall.vxml#init"/>
+      <elseif cond="trigger==2"/>
+        <audio src="tada.wav"/>
+        <goto next="main.vxml#init"/>
+      <else/>
+        <goto next="#init"/>
+      </if>
+    </if>
+  </filled>
+</form>
+
+<form id="exit">
+  <field name="exit_ask">
+     <noinput> Hey, don't sleep! </noinput>
+     <nomatch> Say 'yes' or 'no' </nomatch>
+     <prompt> Do you really want to stop playing the game? </prompt>
+     <grammar src="yesno.grxml"/>
+     <filled>
+       <if cond="exit_ask=='yes'">
+         <prompt> Ok, let's go to the initial stage. </prompt>
+         <goto next="main.vxml#init"/>
+       <else/>
+         <prompt>
+           You've changed your mind? That's good, game continues...
+         </prompt>
+         <goto next="#init"/>
+       </if>
+     </filled>
+   </field>
+</form>
+
+</vxml>
+

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<grammar root="main" version="1.0" xml:lang="en" tag-format="semantics/1.0-literals">
+
+  <meta name="author"
+        content="Vit Novacek, Faculty of Informatics, Masaryk University Brno,
+                 Czaech Republic"/>
+  <meta name="copyright"
+        content="Copyright (c) 2004 Vit Novacek; You can redistribute and/or modify
+                 this file under the terms of the GNU General Public License"/>
+
+  <rule id="main" scope="public">
+    <one-of>
+      <item><ruleref uri="#yes"/><tag>yes</tag></item>
+      <item><ruleref uri="#no"/><tag>no</tag></item>
+    </one-of>
+    <item repeat="0-1"><ruleref uri="#politness"/></item>
+  </rule>
+  <rule id="yes">
+    <one-of>
+      <item>yes</item>
+      <item>yeah</item>
+      <item>yep</item>
+      <item>sure</item>
+      <item>of course</item>
+    </one-of>
+  </rule>
+  <rule id="no">
+    <one-of>
+      <item>no</item>
+      <item>not</item>
+      <item>nope</item>
+    </one-of>
+  </rule>
+  <rule id="politness">
+    <one-of>
+      <item> please </item>
+      <item> thanks </item>
+      <item> thank you </item>
+    </one-of>
+  </rule>
+</grammar>

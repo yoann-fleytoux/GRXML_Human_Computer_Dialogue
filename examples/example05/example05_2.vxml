@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" application="example05_root1.vxml" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="root document example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<!-- start to interpret example05_1.vxml -->
+
+<form id="start">
+  <block>
+    Try it once more.
+  </block>
+
+  <field name="answer">
+    <prompt> Are you sleepy? </prompt>
+
+    <grammar src="yesno.grxml"/>
+
+    <filled>
+      <if cond="answer=='yes'">
+        So you are sleepy. Me too.
+      <else/>
+        So you are not sleepy. But I am.
+      </if>
+    </filled>
+  </field>
+
+  <block>
+    <goto next="example05_3.vxml"/>
+  </block>
+</form>
+
+</vxml>

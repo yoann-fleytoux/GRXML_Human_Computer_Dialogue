@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="document navigation example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+
+<link event="help">
+<grammar src="grammaire_aide.grxml" type="application/srgs+xml" />
+</link>
+
+<catch event="exit">
+  <prompt>  Aurevoir! </prompt>
+  <exit/>
+</catch>
+
+<link event="exit">
+  <grammar src="exit.grxml"/>
+</link>
+
+<!-- declaration des variables Javascript -->
+<script>
+       <!-- Activation/desactivation du mode TRACE -->
+		var mode_trace ="True";
+</script>
+
+<!-- start to interpret this file -->
+
+<form id="orientation">
+
+  <!-- since we dont need to send informations forms, we use goto to go to other froms -->
+  <!-- if it was the case we would use subdialogs -->
+  <!-- The subdialog is used to called reusable common dialogs and will return back to where execution left off in the calling document. And it can return data back to the calling document -->
+
+  <!-- Champ/Slot choix action -->
+	<field name="orientation">
+
+		<prompt> Quelle est votre requete? </prompt>
+
+		<!-- Appel a une grammaire externe -->
+		<grammar src="orientation_grammaire.grxml" type="application/srgs+xml"/>
+
+		<!-- Gestion des erreurs -->
+		<help> insert, select, update, delete </help>
+		<noinput> Je n'ai pas entendu. Pouvez-vous me preciser votre numero d'abonne ? </noinput>
+		<nomatch> Je n'ai pas compris. Pouvez-vous me donner votre numero d'abonne S.V.P ? </nomatch>
+
+		<!-- Comportement du systeme une fois ce champ rempli -->
+		<filled>
+			<!-- Comportement si le mode TRACE est active --> 
+			<if cond="mode_trace=='True'">
+			   TRACE VALEUR  <value expr="orientation.text" /> RESULT <value expr="orientation.result" /> 
+			</if>
+			<!-- disu -->
+			<if cond="orientation.result == '0'">
+				<goto next="delete.vxml"/> <!-- go to another dialog -->
+			</if>
+			<if cond="orientation.result == '1'">
+				<goto next="insert.vxml"/> <!-- go to another dialog -->
+			</if>
+			<if cond="orientation.result == '2'">
+				<goto next="select.vxml"/> <!-- go to another dialog -->
+			</if>
+			<if cond="orientation.result == '3'">
+				<goto next="update.vxml"/> <!-- go to another dialog -->
+			</if>
+			
+         </filled>
+	</field>
+  
+</form>
+
+</vxml>

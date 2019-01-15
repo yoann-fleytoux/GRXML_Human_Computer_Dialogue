@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="using variables example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<var name="a" expr="1"/>
+
+<form id="start">
+  <var name="b" expr="'hello'"/>
+
+  <block>
+    <prompt> Variable a has value: <value expr="a"/> </prompt>
+    <prompt> Let's try to evaluate a simple expression: a+1 = <value expr="a+1"/> </prompt>
+    <prompt> Variable b has value: <value expr="b"/> </prompt>
+    <prompt> Let's try string concatenation: b+' world' = <value expr="b+' world'"/> </prompt>
+  </block>
+</form>
+
+</vxml>

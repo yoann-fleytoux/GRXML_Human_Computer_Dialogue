@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="Calling OptimTalk Object example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<noinput> Hey, don't sleep! </noinput>
+
+<var name="apptolaunch"/>
+
+<form>
+  <field name="apptolaunch">
+    <prompt>
+      Welcome. The power of external functions will be demonstrated to you.
+      Choose one of the following applications, I will launch it for you.
+      <enumerate/>
+    </prompt>
+
+    <nomatch>
+      <prompt>I didn't understand you. Please choose from the following list: <enumerate/></prompt>
+    </nomatch>
+
+    <option dtmf="1" value="notepad"> notepad </option>
+    <option dtmf="2" value="mspaint"> paint </option>
+    <option dtmf="3" value="regedit"> registry editor </option>
+    <option dtmf="4" value="none"> none </option>
+
+    <filled>
+      <if cond="apptolaunch=='none'">
+        <prompt> OK, I will launch no application. Goodbye. </prompt>
+        <exit/>
+      <else/>
+        <assign name="application.apptolaunch" expr="dialog.apptolaunch"/>
+        <goto next="#launch"/>
+      </if>
+    </filled>
+  </field>
+</form>
+
+<form id="launch">
+  <object codetype="application/x-ot-extfn" classid="appcall#appCall">
+    <prompt> Launching the selected application </prompt>
+    <param name="app" expr="apptolaunch"/>
+    <param name="params" expr="''"/>
+      <!-- this example cannot pass any parameters to the application -->
+
+    <catch event="error.semantic">
+      External function failed. Error message: <value expr="_message"/>
+      <exit/>
+    </catch>
+    <filled>
+      External function was successful.
+    </filled>
+  </object>
+
+</form>
+
+</vxml>

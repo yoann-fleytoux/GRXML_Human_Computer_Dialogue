@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="Calculator"/>
+<meta name="author" content="Annu Paganus and Guillaume Quenel"/>
+<meta name="copyright" content="free for non commercial purpose"/>
+
+<!--
+Speech Recognizer calculator
+
+
+Annu Paganus - Guillaume Quenel
+Abo Akademi University
+
+
+Copyright (c) 2005
+
+
+This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or any later version.
+
+This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-->
+
+<!-- Variable for the result of the calculation. -->
+<var name="result" />
+
+<!-- Grammar for getting some case sensitive help. -->
+<link event="help">
+  <grammar root="main">
+    <rule id="main" scope="public">
+      <item repeat="0-1"> please </item>
+      <item repeat="0-1"> I need </item>
+      help
+      <item repeat="0-1"> me </item>
+      <item repeat="0-1"> please </item>
+    </rule>
+  </grammar>
+</link>
+
+
+
+<!-- The form that has fields number_a, operation and number_b.
+     When all filled, it makes the wanted operation for ne numbers a and b. -->
+<form id="start">
+
+<!-- At the beginning user gets information and all fields are cleared.
+     That is needed when starting the calculator again from the begin.-->
+  <block>    Welcome to the calculator. Please say what you want to do.
+	<clear namelist="number_a operation number_b"/>
+      <assign name="mixed" expr="false"/>
+  </block>
+<!-- Variable that is used when the results are told to the user. -->
+  <var name="summarization"/>
+
+<!-- Global tag fields used in case not implemented in current field. -->
+  <nomatch>
+    <prompt> I didn't understand you. </prompt>
+    <reprompt/>
+  </nomatch>
+  <nomatch count="3">
+    <prompt> I didn't understand you again. This is your last chance. </prompt>
+    <reprompt/>
+  </nomatch>
+
+  <!-- When four inputs are not understood the calcultor is turned off. -->
+  <nomatch count="4">
+    <prompt> Sorry, I didn't understand you again. I am giving up. Bye. </prompt>
+    <exit/>
+  </nomatch>
+
+  <help>
+    Sorry, no help is available.
+  </help>
+
+  <!-- If user doesn't give any inputs when asked one time, the calculator is turned off. -->
+  <noinput cond="true" count="1">
+    <prompt> Please say something, it is no time to sleep...! </prompt>
+  </noinput>
+
+  <noinput cond="true" count="2">
+    <prompt> I have no time to play with you. Good Bye  </prompt> <exit/>
+  </noinput>
+
+
+  <grammar src="calc.grxml"/>
+
+<!-- Initial field that is used to let the user give inputs in natural way.
+     After two times not understanding the users input, calculator asks the inputs one by one. -->
+  <initial name="mixed">
+    <nomatch>
+      I didn't understand you. Please specify one number, the operation and the second number.
+    </nomatch>
+    <nomatch count="2">
+      Sorry, I still don't understand you. I will ask you for the information one piece at a time.
+      <assign name="mixed" expr="true"/>
+      <reprompt/>
+    </nomatch>
+    <help>
+      You can specify one number, the operation and the second number.
+    </help>
+  </initial>
+
+
+<!-- The first number to calculate. -->
+  <field name="number_a" slot="calc.numa">
+    What is the first number?
+    <grammar src="calc.grxml#thenumber"/>
+    <nomatch>
+      I didn't understand you. Say a number
+    </nomatch>
+    <nomatch count="2">
+      I didn't understand you.
+    </nomatch>
+    <help>
+      Please say a number between one and ninety nine
+    </help>
+    <filled>
+	<prompt> Number <value expr="number_a"/> </prompt>
+    </filled>
+  </field>
+
+<!-- The operation wanted to do. -->
+  <field name="operation" slot="calc.oper">
+    What operation do you want to do?
+    <grammar src="calc.grxml#operation"/>
+    <nomatch>
+      I didn't understand you. Please say what operation you want to compute.
+    </nomatch>
+    <nomatch count="2">
+      I didn't understand you. Say plus, minus, divide or multiply.
+    </nomatch>
+    <help>
+      Please say plus, minus, divide or multiply.
+    </help>
+    <filled>
+	<prompt> operation <value expr="operation"/></prompt>
+    </filled>
+  </field>
+
+<!-- The second number to calculate. -->
+  <field name="number_b" slot="calc.numb">
+    What is the second number?
+    <grammar src="calc.grxml#thenumber"/>
+    <nomatch>
+      I didn't understand you. Say a number
+    </nomatch>
+    <nomatch count="2">
+      I didn't understand you.
+    </nomatch>
+    <help>
+      Please say a number between one and ninety nine
+    </help>
+    <filled>
+	<prompt> number <value expr="number_b"/></prompt>
+    </filled>
+  </field>
+
+  <block>
+
+    <!-- Calculating the result. -->
+    <if cond="operation=='divided' &amp;&amp; number_b == '0'">
+	<prompt> I can't divide a number by zero, your operation is impossible </prompt>
+
+    <elseif cond="operation=='divided' &amp;&amp; number_b != '0'"/>
+	<assign name="result" expr="number_a / number_b" />
+
+    <elseif cond="operation=='minus'" />
+	<assign name="result" expr="number_a - number_b" />
+
+    <elseif cond="operation=='multiply'" />
+	<assign name="result" expr="number_a * number_b" />
+
+    <elseif cond="operation=='plus'" />
+	<!--  Number() here in order to avoid interpreting + as string concatenation! -->
+	<assign name="result" expr="Number(number_a) + Number(number_b)" />
+
+    </if>
+
+    <!-- Calculating the result. -->
+    <script> <![CDATA[
+      summarization = number_a;
+      summarization += ' ';
+      summarization += operation;
+      summarization += ' ';
+      summarization += number_b;
+      summarization += ' equals ';
+      summarization += result;
+    ]]> </script>
+
+
+   <if cond="operation!='divided' || number_b != '0'">
+     <prompt> You ask to compute <value expr="summarization"/>. </prompt>
+   </if>
+
+   <goto next="#is_correct"/>
+
+
+  </block>
+
+</form>
+
+
+<!-- The form in which user is asked if he/she wants to continue calculating. -->
+<form id="is_correct">
+  <field name="yesno">
+
+    <noinput> Calculator is about to exit. Good bye! <exit/> </noinput>
+    <nomatch> I didn't understand you. Please say yes or no</nomatch>
+
+    <prompt>Do you want to continue?</prompt>
+    <grammar src="yesno.grxml"/>
+    <filled>
+      <if cond="yesno == 'yes'">
+	<goto next="#start"/>
+       <else/>
+	   <prompt>Thank you for using this calculator!</prompt>
+         <exit />
+      </if>
+  </filled>
+  </field>
+</form>
+
+</vxml>

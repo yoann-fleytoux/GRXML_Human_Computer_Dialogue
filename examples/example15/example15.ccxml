@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ - The following example code shows how you would duplicate the
+ - standard VoiceXML 2.0 Interpreter Context in a CCXML Application.
+ - It is based on the example from CCXML specification.
+ - This example is not meant to be a complete application and does
+ - not handle all error events but is rather meant to give an overview
+ - of what such an application may look like.
+ -
+ - At the beginning of the example, we create an outgoing call and
+ - start a dialog for this call. Then the example contains sections
+ - which can process disconnect and transfer requests from a dialog.
+ - Dialog 'example15a.vxml' allows a user to make these requests.
+ -->
+
+<ccxml version="1.0">
+  <!-- Name of the vxml dialog called by this script -->
+  <var name="dialogSrc" expr="'example15a.vxml'"/>
+
+  <!-- Declare the vars we are going to use -->
+  <var name="my_connectionid" />   <!-- the original connection -->
+  <var name="out_connectionid" />  <!-- the connection we transfer to -->
+
+  <var name="dialogid" />
+  <var name="results"/>
+  <!-- Set an initial state -->
+  <var name="mystate" expr="'init'"/>
+
+  <eventprocessor statevariable="mystate">
+
+    <!--
+      - First, prepare a dialog, create an outgoing call and connect
+      - it to the dialog.
+    -->
+    <transition state="init" event="ccxml.loaded">
+      <dialogprepare src="dialogSrc"
+       dialogid="dialogid"/>
+    </transition>
+
+    <transition state="init" event="dialog.prepared">
+      <createcall dest="'*21'"
+       connectionid="my_connectionid"/>
+    </transition>
+
+    <transition state="init" event="connection.connected">
+      <dialogstart prepareddialogid="dialogid"
+       connectionid="event$.connectionid"/>
+    </transition>
+
+    <transition  state="init" event="dialog.started">
+      <log expr="'Connection connected and dialog started.'"/>
+      <assign name="mystate" expr="'dialogActive'" />
+    </transition>
+
+    <!-- When dialog exits we must diconnect the call and exit -->
+    <transition state="dialogActive terminatetransfer" event="dialog.exit">
+      <log expr="'Dialog exited. Terminating.'"/>
+      <disconnect connectionid="my_connectionid" />
+      <assign name="mystate" expr="'dialogExited'" />
+    </transition>
+
+    <transition state="dialogExited" event="connection.disconnected">
+      <if cond="event$.connectionid == my_connectionid">
+        <!-- The original connection was disconnected from the dialog.
+             We could get here also event from the out call after transfer if
+	     dialog requests terminatetransfer and exits before the call is
+	     disconnected.
+        -->
+        <exit/>
+      </if>
+    </transition>
+
+    <!--
+      - Dialog requests that we disconnect the call
+    -->
+    <transition state="dialogActive" event="dialog.disconnect">
+      <log expr="'Dialog requests that we disconnect the call'"/>
+      <disconnect connectionid="event$.connectionid" />
+      <assign name="mystate" expr="'disconnecting'" />
+    </transition>
+
+    <!--
+      - We have disconnected the call. We need to send an
+      - event to the dialog saying we are done.
+    -->
+    <transition state="disconnecting" event="connection.disconnected">
+      <dialogterminate dialogid="dialogid" />
+    </transition>
+
+    <!--
+      - Dialog has exited after we disconnected the call.
+      - We just are going to exit from this CCXML session...
+    -->
+    <transition state="disconnecting" event="dialog.exit">
+      <exit/>
+    </transition>
+
+    <!--
+      - The caller disconnected. We need to send the event up to
+      - the Dialog and change our state.
+    -->
+    <transition state="dialogActive" event="connection.disconnected">
+      <send name="'connection.disconnect.hangup'"
+       target="dialogid"
+       targettype="'dialog'"/>
+      <assign name="mystate" expr="'userDisconnect'" />
+    </transition>
+
+    <!--
+      - Dialog has exited after the caller hungup.
+      - We just are going to exit from this CCXML session...
+    -->
+    <transition state="userDisconnect" event="dialog.exit">
+      <exit/>
+    </transition>
+
+    <!--
+      -
+      - Handle a transfer request from a VXML script.
+      -
+    -->
+    <transition state="dialogActive" event="dialog.transfer">
+      <log expr="'Dialog requests a transfer.'"/>
+      <!-- Branch on transfer type -->
+      <if cond="event$.type == 'blind'">
+        <!-- Bridge == false. We are going to just redirect the call -->
+
+        <!-- Update our state var -->
+        <assign name="mystate" expr="'redirecting'" />
+
+        <!-- And redirect to the uri specified in the event -->
+        <redirect connectionid="my_connectionid" dest="event$.URI" />
+      <else/>
+        <!-- Bridge == true. In this case we need to
+                place a call and bridge the calls -->
+        <!-- Update our state var -->
+        <assign name="mystate" expr="'calling'" />
+        <!-- Place the call using the values from the transfer request -->
+        <createcall dest="event$.URI"
+         connectionid="out_connectionid"
+         aai="event$.aai"
+         timeout="event$.connecttimeout"/>
+       </if>
+     </transition>
+
+    <!--
+      - We will get the following events but we do not do anything
+      - because in VoiceXML 2.0 you just ignore redirect errors.
+      - We do however process the dialog.exit and shutdown
+      - the CCXML Session.
+    -->
+    <transition state="redirecting" event="connection.redirected">
+      <!-- Dialog does not expect any events in case of blind trandfer -->
+    </transition>
+
+    <transition state="redirecting" event="connection.failed">
+      <!-- Dialog does not expect any events in case of blind trandfer -->
+    </transition>
+
+    <transition state="redirecting" event="dialog.exit">
+      <log expr="'Dialog exited. Terminating session.'"/>
+      <exit/>
+    </transition>
+
+    <!--
+      -
+      - Handle bridge=true Events
+      -
+      - This first event is for if the outbound call failed.
+      -
+    -->
+    <transition state="calling" event="connection.failed">
+      <!-- Just send the error event to the dialog -->
+      <assign name="results" expr="event$.reason"/>
+      <send name="'dialog.transfer.complete'"
+       target="dialogid"
+       targettype="'dialog'"
+       namelist="results" />
+      <!-- Update our state var back to the original state -->
+      <assign name="mystate" expr="'dialogActive'" />
+    </transition>
+
+    <!--
+      - The outbound call has been answered.
+    -->
+    <transition state="calling" event="connection.connected">
+      <!-- Update our state var back to show that we are connected -->
+      <assign name="mystate" expr="'outgoing_call_active'" />
+
+      <!-- Join the two calls together -->
+      <join id1="my_connectionid" id2="out_connectionid" duplex="'full'" />
+    </transition>
+
+    <!--
+      - There is not much to do in this case. We simply exit.
+    -->
+    <transition state="calling" event="dialog.exit">
+      <exit/>
+    </transition>
+
+    <!--
+      - We will get here once the join completes.
+    -->
+    <transition state="outgoing_call_active" event="conference.joined">
+      <if cond="event$.id1==my_connectionid &amp;&amp;
+                event$.id2==out_connectionid">
+        <send name="'dialog.transfer.connected'"
+         target="dialogid"
+         targettype="'dialog'"/>
+      </if>
+    </transition>
+
+    <!--
+      - Deal with someone disconnecting.
+    -->
+    <transition state="outgoing_call_active" event="connection.disconnected">
+      <!-- Branch off based on what call leg this is for and send
+              the proper event to the dialog -->
+      <if cond="event$.connectionid == out_connectionid">
+        <!-- The outgoing call is disconnected. -->
+	<assign name="mystate" expr="'backToDialogActive'" />
+
+        <if cond="typeof event$.reason != 'undefined'">
+          <assign name="results" expr="event$.reason" />
+        <else/>
+          <assign name="results" expr="'far_end_disconnect'" />
+        </if>
+
+
+        <!-- Join the original connection back -->
+        <join id1="my_connectionid" id2="dialogid" duplex="'full'" />
+
+       <else />
+
+        <!-- Set our state to show that the original caller is disconnected. -->
+        <assign name="mystate" expr="'userDisconnected'" />
+        <!-- Disconnect the outbound call -->
+        <disconnect connectionid="out_connectionid"/>
+        <dialogterminate dialogid="dialogid"/>
+      </if>
+    </transition>
+
+    <!--
+      - The dialog requests that we stop the transfer.
+    -->
+    <transition state="calling outgoing_call_active"
+                event="dialog.terminatetransfer">
+      <log expr="'The dialog requests that we stop the transfer.'"/>
+      <!-- Change our state to show we are dealing with terminatetransfer stuff -->
+      <assign name="mystate" expr="'terminatetransfer'" />
+
+      <!-- disconnect outgoing connection -->
+      <disconnect connectionid="out_connectionid"/>
+    </transition>
+
+    <transition state="backToDialogActive" event="conference.joined">
+        <assign name="results" expr="'far_end_disconnect'" />
+
+        <send name="'dialog.transfer.complete'"
+         target="dialogid"
+         targettype="'dialog'"
+         namelist="results" />
+        <!-- Update our state var back to the original state -->
+        <assign name="mystate" expr="'dialogActive'" />
+    </transition>
+
+    <!--
+      - Outgoing call was canceled before being connected.
+    -->
+    <transition state="terminatetransfer" event="connection.failed">
+      <!-- In case when dialog terminated the transfer, the dialog does not
+        expect any events (except connection.disconnect.hangup if the original
+        connection was disconnected from the dialog) -->
+      <!-- Update our state var back to the dialogActive state -->
+      <assign name="mystate" expr="'dialogActive'" />
+    </transition>
+
+    <!--
+      - Calls have been unjoined.
+    -->
+    <transition state="terminatetransfer" event="connection.disconnected">
+      <if cond="event$.connectionid == my_connectionid">
+        <!-- The original connection was disconnected from the dialog -->
+        <send name="'connection.disconnect.hangup'"
+         target="dialogid"
+         targettype="'dialog'"/>
+        <!-- Update our state var to the userDisconnect state -->
+        <assign name="mystate" expr="'userDisconnect'" />
+      <else/>
+        <!-- The connection we transfer to was disconnected from the original
+          connection -->
+        <!-- Rejoin the original connection to the dialog -->
+        <join id1="my_connectionid" id2="dialogid"/>
+      </if>
+    </transition>
+
+    <!--
+      - We are all back together again.
+    -->
+    <transition state="terminatetransfer" event="conference.joined">
+      <!-- When the dialog terminated the transfer the dialog does not expect
+        any events in this case -->
+      <!-- Update our state var back to the dialogActive state -->
+      <assign name="mystate" expr="'dialogActive'" />
+    </transition>
+
+    <transition state="terminatetransfer" event="error.conference.join error.semantic">
+      <!-- The dialog has exited just after requesting terminatetransfer.
+        We can ignore this event. dialog.exit should appear soon. -->
+    </transition>
+
+    <!--
+      - When dialog exits after the original connection disconnected
+      - we just exit
+     -->
+    <transition state="userDisconnected" event="dialog.exit">
+      <exit/>
+    </transition>
+
+    <transition state="userDisconnected" event="connection.disconnected">
+    </transition>
+
+    <!--
+      - And last but not least catch any connection.disconnected
+      - events that made it past us.
+    -->
+    <transition event="connection.disconnected">
+      <log expr="'Connection disconnected.'"/>
+      <exit/>
+    </transition>
+
+    <transition event="error.send.targetunavailable">
+    </transition>
+
+  </eventprocessor>
+</ccxml>

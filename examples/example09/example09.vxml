@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="mixed initiative dialog, filled and counters example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<link event="again">
+  <grammar root="main">
+    <rule id="main" scope="public">
+      <item repeat="0-1"> please </item>
+      <item repeat="0-1"> all </item>
+      <one-of>
+        <item> again </item>
+        <item> once more </item>
+      </one-of>
+      <item repeat="0-1"> please </item>
+    </rule>
+  </grammar>
+</link>
+
+<nomatch>
+  Sorry, I did not understand you.
+  <reprompt/>
+</nomatch>
+
+<form id="get_from_and_to_cities">
+  <grammar src="cities.grxml"/>
+
+  <catch event="again">
+    <prompt> OK, once more!</prompt>
+    <clear namelist="bypass_init from_city to_city"/>
+    <reprompt/>
+  </catch>
+
+  <nomatch count="2">
+    I am sorry, I still do not understand you. Valid cities are London, Prague and Rome
+  </nomatch>
+  <nomatch count="3">
+    I did not understand again. I am giving up. Bye.
+    <exit/>
+  </nomatch>
+
+  <block> Welcome to the airplain ticket reservation system. </block>
+
+  <initial name="bypass_init">
+    Where do you want to fly from and to?
+    <nomatch count="1">
+      Sorry, I did not understand you. Say something like "from London to Prague".
+    </nomatch>
+    <nomatch count="2">
+      I am sorry, I still don't understand.
+      I will ask you for information one piece at a time.
+      <assign name="bypass_init" expr="true"/>
+      <reprompt/>
+    </nomatch>
+  </initial>
+
+  <field name="from_city" slot="from">
+    <grammar src="cities.grxml#from"/>
+    From which city are you leaving?
+    <prompt count="2"> Tell me from which city you are leaving, please </prompt>
+  </field>
+
+  <field name="to_city" slot="to">
+    <grammar src="cities.grxml#to"/>
+    To which city do you want to fly?
+    <prompt count="2"> Tell me to which city you want to fly, please </prompt>
+  </field>
+
+  <block>
+    <prompt>
+      A ticket from <value expr="from_city"/> to <value expr="to_city"/>
+      is reserved for you.
+    </prompt>
+  </block>
+
+  <filled namelist="from_city">
+    <prompt>Your departure city is <value expr="from_city"/>.</prompt>
+  </filled>
+
+  <filled namelist="to_city">
+    <prompt>Your arrival city is <value expr="to_city"/>.</prompt>
+  </filled>
+
+  <filled>
+    <if cond="from_city==to_city">
+      <prompt>
+        Sorry, you can't fly from <value expr="from_city"/> to <value expr="to_city"/>!
+      </prompt>
+      <prompt>
+        Please repeat your order.
+      </prompt>
+      <clear namelist="bypass_init from_city to_city"/>
+    </if>
+  </filled>
+
+</form>
+
+</vxml>

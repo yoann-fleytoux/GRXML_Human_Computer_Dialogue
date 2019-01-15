@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- fichier grammaire_date.grxml -->
+
+<grammar version="1.0" root="Horaire" xml:lang="fr" >
+
+<meta name="description" content="Horaire_version_1"/>
+<meta name="author" content="C. IBRAHIM"/>
+<meta name="copyright" content="free for any purpose"/>
+
+
+<!-- regle Horaire se reecrit Heure [+ ["Heure"] + Minutes] -->
+     <rule id = "Horaire" scope = "public">
+        <one-of>
+                <item> <ruleref uri="#Heures"/> 
+                        <tag> out.h = rules.Heures.h%24; out.flag = 0; out.min = 0; out.minAbs = out.h*60 + out.min </tag> </item>
+                <item> <ruleref uri="#Heures"/> <ruleref uri="#Minutes"/> 
+                        <tag> out.h = (rules.Heures.h - rules.Minutes.flag)%24; out.min = rules.Minutes.mn; out.minAbs = out.h*60 + out.min;
+                         </tag> </item>           
+        </one-of>
+        <tag> out.text = meta.current().text </tag>
+     </rule>
+
+     <rule id="Heures">
+                <one-of>
+                        <item> <ruleref uri="grammaire_nombre_v3.grxml#nombre"/> heures <tag> out.h = rules.nombre.nb </tag> </item>
+                        <item> une heure <tag> out.h = 1 </tag> </item>
+                        <item> midi <tag> out.h = 12 </tag> </item>
+                        <item> minuit <tag> out.h = 24 </tag> </item>
+                </one-of>
+                <tag> out.text = meta.current().text </tag>
+     </rule>
+
+     <rule id="Minutes">
+                <one-of>
+                        <item> <ruleref uri="#MinutesAbsolues"/> <tag> out.mn = rules.MinutesAbsolues.mn; out.flag = rules.MinutesAbsolues.flag </tag> </item>
+                        <item> <ruleref uri="#MinutesRelatives"/> <tag> out.mn = rules.MinutesRelatives.mn; out.flag = rules.MinutesRelatives.flag </tag> </item>
+                </one-of>
+                <tag> out.text = meta.current().text + out.min + out.flag </tag>
+     </rule>
+
+     <rule id="MinutesAbsolues">
+                <one-of>
+                        <item> une <tag> out.mn = 1; out.flag = 0 </tag> </item>
+                        <item> <ruleref uri="grammaire_nombre_v3.grxml#nombre"/> <tag> out.mn = rules.nombre.nb; out.flag = 0 </tag> </item>
+                        <item> et quart <tag> out.mn = 15; out.flag = 0 </tag> </item>
+                        <item> et demie <tag> out.mn = 30; out.flag = 0 </tag> </item>
+                        <item> trente-et-une <tag> out.mn = 31; out.flag = 0 </tag> </item>
+                        <item> vingt-et-une <tag> out.mn = 21; out.flag = 0 </tag> </item>
+                        
+
+                </one-of>
+                <tag> out.text = meta.current().text + out.min </tag>
+     </rule>
+
+     <rule id="MinutesRelatives">
+                <one-of>
+                        <item> moins cinq <tag> out.mn = 55; out.flag = 1  </tag> </item>
+                        <item> moins dix <tag> out.mn = 50; out.flag = 1 </tag> </item>
+                        <item> moins quart<tag> out.mn = 45; out.flag = 1 </tag> </item>
+                        <item> moins le quart<tag> out.mn = 45; out.flag = 1 </tag> </item>
+                        <item> moins vingt<tag> out.mn = 40; out.flag = 1 </tag> </item>
+                        <item> moins vingt-cinq<tag> out.mn = 35; out.flag = 1 </tag> </item>
+                </one-of>
+                <tag> out.text = meta.current().text + out.min </tag>
+     </rule>
+
+</grammar>      

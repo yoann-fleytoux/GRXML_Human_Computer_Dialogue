@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar root="main" version="1.0" xml:lang="en">
+
+  <meta name="description" content="grammar for expressing decision about the next move"/>
+  <meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+  <meta name="copyright" content="free for any purpose"/>
+
+  <rule id="main" scope="public">
+    <one-of>
+      <item><ruleref uri="#cooperate"/><tag>out.cooperation = true;</tag></item>
+      <item><ruleref uri="#defect"/><tag>out.cooperation = false;</tag></item>
+    </one-of>
+  </rule>
+
+  <rule id="cooperate">
+    <item repeat="0-1">I</item>
+    <item repeat="0-1">want</item>
+    <item repeat="0-1">will</item>
+    <item repeat="0-1">to</item>
+    <item repeat="0-1">be</item>
+    <one-of>
+      <item>cooperate</item>
+      <item>cooperative</item>
+    </one-of>
+  </rule>
+
+  <rule id="defect">
+    <item repeat="0-1">I</item>
+    <item repeat="0-1">want</item>
+    <item repeat="0-1">will</item>
+    <item repeat="0-1">to</item>
+    <one-of>
+      <item>defect</item>
+      <item>betray</item>
+    </one-of>
+  </rule>
+
+</grammar>

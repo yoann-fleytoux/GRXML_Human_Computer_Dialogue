@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar root="main" version="1.0" xml:lang="en">
+
+  <meta name="description" content="yes/no grammar"/>
+  <meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+  <meta name="copyright" content="free for any purpose"/>
+
+  <rule id="main" scope="public">
+    <one-of>
+      <item><ruleref uri="#yes"/><tag>out=true</tag></item>
+      <item><ruleref uri="#no"/><tag>out=false</tag></item>
+    </one-of>
+  </rule>
+  <rule id="yes">
+    <one-of>
+      <item>yes</item>
+      <item>yeah</item>
+      <item>yep</item>
+      <item>sure</item>
+    </one-of>
+  </rule>
+  <rule id="no">
+    <one-of>
+      <item>no</item>
+      <item>not</item>
+      <item>nope</item>
+    </one-of>
+  </rule>
+</grammar>

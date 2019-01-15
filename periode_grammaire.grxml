@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://www.w3.org/2001/06/grammar" version="1.0" root="lieu" xml:lang="fr">
+
+	<meta name="description" content="Horaire"/>
+	<meta name="author" content="Yoann Fleytoux"/>
+
+<rule id="lieu" scope="public">
+	<item repeat ="0-1">
+	<ruleref uri="#filler_debut_phrase" /> 
+	</item>
+		<one-of>
+			<item>
+				<ruleref uri="#matin" /> 
+			</item>
+			<item>
+				<ruleref uri="#aprem" /> 
+			</item>
+			<item>
+				<ruleref uri="#soir" /> 
+			</item>
+
+		</one-of>
+		<tag> out.text = rules.latest().text; out.result = rules.latest().result </tag>
+	<item repeat ="0-1">
+	<ruleref uri="#filler_fin_phrase" /> 
+	</item>
+  </rule>
+  
+  
+<rule id="matin">
+	<one-of>
+		  <item> matin </item>
+	</one-of>
+	<tag> out.text = meta.current().text + " "; out.result=0 </tag> 
+</rule>
+  
+<rule id="aprem">
+	<one-of>
+		  <item> aprem </item>
+	</one-of>
+	<tag> out.text = meta.current().text + " "; out.result=1 </tag> 
+</rule>
+
+<rule id="soir">
+	<one-of>
+		  <item> soir </item>
+	</one-of>
+	<tag> out.text = meta.current().text + " "; out.result=2 </tag> 
+</rule>
+
+<rule id="filler_debut_phrase">
+      <one-of>
+              <item> le </item>
+      </one-of>
+</rule>
+
+<rule id="filler_fin_phrase">
+      <one-of>
+              <item> lol2 </item>
+      </one-of>
+</rule>
+</grammar>

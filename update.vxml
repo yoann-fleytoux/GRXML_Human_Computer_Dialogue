@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="document navigation example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+
+<link event="help">
+<grammar src="grammaire_aide.grxml" type="application/srgs+xml" />
+</link>
+
+<catch event="exit">
+  <prompt>  Aurevoir! </prompt>
+  <exit/>
+</catch>
+
+<link event="exit">
+  <grammar src="exit.grxml"/>
+</link>
+
+<!-- declaration des variables Javascript -->
+<script>
+       <!-- Activation/desactivation du mode TRACE -->
+		var mode_trace ="True";
+</script>
+
+<!-- start to interpret this file -->
+
+<form id= "update">
+<!--  voir exemple dialogue 3--> 
+
+<!-- contenu sous-dialogue idem formulaire -->
+<!--<var name = "Essai param1"/>
+<var name = "Essai param2"/>-->
+
+	<field name="date_rdv_a_deplacer">
+	<prompt> Donner la date du rendez-vous que vous souhaiteriez deplacer? <!--est ce <value expr="Essai param1" /> ou <value expr="Essai param2" />--></prompt>
+			 
+			 <!-- Appel a une grammaire externe -->
+			 <grammar src="grammaire_date_rdv_ab_v2.grxml" type="application/srgs+xml" />
+			 
+			 <!-- Gestion des erreurs -->
+			 <help> Repondez en donnant une date complete en lettre (annee a partir de 2013) </help>
+			 <noinput> Je n'ai pas entendu. Pouvez-vous repeter ? </noinput>
+			 <nomatch> Je ne vous ai pas compris. Pouvez-vous repondre une date valide? </nomatch>
+			 
+			 <!-- Comportement du systeme apres confirmation/infirmation --> 
+			 <!-- OK ==> On sort ou on passe a une autre sous-tache -->
+			 <!-- NOK ==> On efface tout et on recommence --> 
+
+		<filled>
+			Merci! On vous change cela
+			<prompt> la valeur récupéré est <value expr= "date_rdv_a_deplacer.text"/> </prompt>
+		</filled>
+	</field>
+
+	<field name="horaire_rdv_a_deplacer">
+	<prompt> Donner maintenant l'horaire du rendez-vous que vous souhaiteriez deplacer? <!--est ce <value expr="Essai param1" /> ou <value expr="Essai param2" />--></prompt>
+			 
+			 <!-- Appel a une grammaire externe -->
+			 <grammar src="grammaire_heure_rdv_ab_v2.grxml" type="application/srgs+xml" />
+			 
+			 <!-- Gestion des erreurs -->
+			 <help> Repondez en donnant une horaire complete </help>
+			 <noinput> Je n'ai pas entendu. Pouvez-vous repeter ? </noinput>
+			 <nomatch> Je ne vous ai pas compris. Pouvez-vous repondre une horaire valide? </nomatch>
+			 
+			 <!-- Comportement du systeme apres confirmation/infirmation --> 
+			 <!-- OK ==> On sort ou on passe a une autre sous-tache -->
+			 <!-- NOK ==> On efface tout et on recommence --> 
+
+		<filled>
+			Merci! On vous change cela
+			<prompt> la valeur récupéré est <value expr= "horaire_rdv_a_deplacer.text"/> </prompt>
+			<!--<return namelist = "horaire_rdv_a_deplacer date_rdv_a_deplacer"/>  TODO-->  
+			<goto next="orientation.vxml"/>
+		</filled>
+	</field>
+
+</form>
+
+</vxml>

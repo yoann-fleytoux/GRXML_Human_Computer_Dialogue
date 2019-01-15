@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="document navigation example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<!-- start to interpret example02_1.vxml -->
+
+<form id="start">
+  <block>
+    <prompt> Welcome to another document. </prompt>
+    <goto next="#another"/>
+  </block>
+</form>
+
+<form id="another">
+  <block>
+    Now we are in another dialog in the other document.
+  </block>
+</form>
+
+</vxml>

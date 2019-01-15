@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://www.w3.org/2001/06/grammar" version="1.0" root="lieu" xml:lang="fr">
+
+	<meta name="description" content="Horaire"/>
+	<meta name="author" content="Yoann Fleytoux"/>
+
+<rule id="lieu" scope="public">
+	<item repeat ="0-1">
+	<ruleref uri="#filler_debut_phrase" /> 
+	</item>
+		<one-of>
+			<item>
+				<ruleref uri="#delete_phrase" /> 
+			</item>
+			<item>
+				<ruleref uri="#insert_phrase" /> 
+			</item>
+			<item>
+				<ruleref uri="#select_phrase" /> 
+			</item>
+			<item>
+				<ruleref uri="#update_phrase" /> 
+			</item>
+
+		</one-of>
+		<tag> out.text = rules.latest().text; out.result = rules.latest().result </tag>
+	<item repeat ="0-1">
+	<ruleref uri="#filler_fin_phrase" /> 
+	</item>
+  </rule>
+  
+<rule id="delete_phrase">
+	<one-of>
+		  <item> delete </item>
+	</one-of>
+	<tag> out.text = meta.current().text + " "; out.result=0 </tag> 
+</rule>
+  
+<rule id="insert_phrase">
+	<one-of>
+		  <item> insert </item>
+	</one-of>
+	<tag> out.text = meta.current().text + " "; out.result=1 </tag> 
+</rule>
+
+<rule id="select_phrase">
+	<one-of>
+		  <item> select </item>
+	</one-of>
+	<tag> out.text = meta.current().text + " "; out.result=2 </tag> 
+</rule>
+
+<rule id="update_phrase">
+	<one-of>
+		  <item> update </item>
+	</one-of>
+	<tag> out.text = meta.current().text + " "; out.result=3 </tag> 
+</rule>
+
+<rule id="filler_debut_phrase">
+      <one-of>
+              <item> lol1 </item>
+      </one-of>
+</rule>
+
+<rule id="filler_fin_phrase">
+      <one-of>
+              <item> lol2 </item>
+      </one-of>
+</rule>
+</grammar>

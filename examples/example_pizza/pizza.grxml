@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar version="1.0" root="order" xml:lang="en">
+
+<meta name="description" content="grammar for ordering a pizza and a drink"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<rule id="politness1">
+  <item repeat="0-1"> please </item>
+  <item repeat="0-1">
+    I
+    <one-of>
+      <item> want </item>
+      <item> would like </item>
+    </one-of>
+  </item>
+</rule>
+
+<rule id="politness2">
+  <item repeat="0-1">
+    <one-of>
+      <item> please </item>
+      <item> thank you </item>
+    </one-of>
+  </item>
+</rule>
+
+<rule id="order" scope="public">
+  <tag>out.pizza = new Object;</tag>
+
+  <ruleref uri="#politness1"/>
+  <item repeat="1-">
+    <one-of>
+      <item>
+        <ruleref uri="#drink"/>
+        <tag>out.drink = rules.drink</tag>
+      </item>
+      <item>
+        <ruleref uri="#number"/>
+        <tag>out.pizza.number = rules.number</tag>
+      </item>
+      <item>
+        <ruleref uri="#size"/>
+        <tag>out.pizza.size = rules.size</tag>
+      </item>
+      <item>
+        <item repeat="0-1"> with </item>
+        <ruleref uri="#topping"/>
+        <item repeat="0-1"> and </item>
+        <tag>
+          if (typeof out.pizza.topping != "object") out.pizza.topping = new Array;
+          out.pizza.topping.push (rules.topping);
+        </tag>
+      </item>
+    </one-of>
+  </item>
+  <ruleref uri="#politness2"/>
+</rule>
+
+<rule id="orderdrink" scope="public">
+  <ruleref uri="#politness1"/>
+  <ruleref uri="#drink"/>
+  <tag> out = rules.drink</tag>
+  <ruleref uri="#politness2"/>
+</rule>
+
+<rule id="drink">
+  <one-of>
+    <item>coca cola <tag>out = "coke"</tag></item>
+    <item>coke</item>
+    <item>sprite</item>
+    <item>fanta</item>
+    <item>none</item>
+    <item>nothing <tag>out = "none"</tag></item>
+  </one-of>
+</rule>
+
+<rule id="ordernumber" scope="public">
+  <ruleref uri="#politness1"/>
+  <ruleref uri="#number"/>
+  <tag> out = rules.number</tag>
+  <ruleref uri="#politness2"/>
+</rule>
+
+<rule id="number">
+  <one-of>
+    <item> a <tag>out=1</tag></item>
+    <item> one <tag>out=1</tag></item>
+    <item> 1 </item>
+    <item> two <tag>out=2</tag></item>
+    <item> 2 </item>
+    <item> three <tag>out=3</tag></item>
+    <item> 3 </item>
+    <item> four <tag>out=4</tag></item>
+    <item> 4 </item>
+    <item> five <tag>out=5</tag></item>
+    <item> 5 </item>
+  </one-of>
+</rule>
+
+<rule id="ordersize" scope="public">
+  <ruleref uri="#politness1"/>
+  <ruleref uri="#size"/>
+  <tag> out = rules.size</tag>
+  <ruleref uri="#politness2"/>
+</rule>
+
+<rule id="size">
+  <one-of>
+    <item><ruleref uri="#size_small"/><tag>out="small"</tag></item>
+    <item><ruleref uri="#size_medium"/><tag>out="medium"</tag></item>
+    <item><ruleref uri="#size_big"/><tag>out="big"</tag></item>
+  </one-of>
+  <item repeat="0-1"> size </item>
+</rule>
+
+<rule id="size_small">
+  small
+</rule>
+
+<rule id="size_medium">
+  <one-of>
+    <item> average </item>
+    <item> medium </item>
+    <item> normal </item>
+    <item> regular </item>
+  </one-of>
+</rule>
+
+<rule id="size_big">
+  <one-of>
+    <item> big </item>
+    <item> large </item>
+  </one-of>
+</rule>
+
+<rule id="ordertoppings" scope="public">
+  <tag> out = new Array; </tag>
+  <ruleref uri="#politness1"/>
+  <item repeat="1-">
+    <item repeat="0-1"> with </item>
+    <ruleref uri="#topping"/>
+    <item repeat="0-1"> and </item>
+    <tag> out.push(rules.topping); </tag>
+  </item>
+  <ruleref uri="#politness2"/>
+</rule>
+
+<rule id="topping">
+  <one-of>
+    <item> cheese </item>
+    <item> ham </item>
+    <item> pepperoni </item>
+    <item> eggs </item>
+    <item> anchovies </item>
+    <item> mushrooms </item>
+  </one-of>
+</rule>
+
+</grammar>

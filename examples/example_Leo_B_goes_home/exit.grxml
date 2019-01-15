@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<grammar root="main" version="1.0" xml:lang="en">
+
+  <meta name="author"
+        content="Vit Novacek, Faculty of Informatics, Masaryk University Brno,
+                 Czaech Republic"/>
+  <meta name="copyright"
+        content="Copyright (c) 2004 Vit Novacek; You can redistribute and/or modify
+                 this file under the terms of the GNU General Public License"/>
+
+  <rule id="main" scope="public">
+    <item> <ruleref uri="#ctd"/> <tag>out="exit"</tag> </item>
+  </rule>
+  <rule id="ctd">
+    <one-of>
+      <item>
+        <item repeat="0-1"> I want to </item>
+        <one-of>
+          <item> exit </item>
+          <item> leave </item>
+          <item> quit </item>
+        </one-of>
+        <item repeat="0-1"> please </item>
+      </item>
+      <item repeat="1-2">
+        bye
+      </item>
+    </one-of>
+  </rule>
+</grammar>

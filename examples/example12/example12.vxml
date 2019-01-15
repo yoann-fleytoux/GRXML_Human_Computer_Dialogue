@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="menu example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<menu dtmf="true">
+  <prompt>
+    Welcome to main menu. Say the name of the required section or
+    <enumerate>
+      press <value expr="_dtmf"/> for <value expr="_prompt"/>,
+    </enumerate>
+  </prompt>
+  <choice next="#news">
+    news
+  </choice>
+  <choice next="#sport">
+    sport
+  </choice>
+  <choice next="#weather">
+    weather forecast
+  </choice>
+
+  <noinput> Please say one of <enumerate/> </noinput>
+  <nomatch> I don't understand you. Please say one of <enumerate/> </nomatch>
+</menu>
+
+<form id="news">
+  <block> Welcome to news. Nothing is here for now. </block>
+</form>
+
+<form id="sport">
+  <block> Welcome to sport section. Nothing is here for now. </block>
+</form>
+
+<form id="weather">
+  <block> Welcome to weather forecast. Weather will be either nice or bad. </block>
+</form>
+
+</vxml>

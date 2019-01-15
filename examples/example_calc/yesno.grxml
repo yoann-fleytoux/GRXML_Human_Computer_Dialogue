@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar version="1.0" root="yesno" xml:lang="en" tag-format="semantics/1.0-literals">
+
+<meta name="description" content="yes/no grammar"/>
+<meta name="author" content="Annu Paganus and Guillaume Quenel"/>
+<meta name="copyright" content="free for non commercial purpose"/>
+
+<!--
+Speech Recognizer calculator
+
+
+Annu Paganus - Guillaume Quenel
+Abo Akademi University
+
+
+Copyright (c) 2005
+
+
+This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or any later version.
+
+This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+-->
+<!-- The root rule -->
+  <rule id="yesno" scope="public">
+    <one-of>
+      <item><ruleref uri="#yes"/><tag>yes</tag></item>
+      <item><ruleref uri="#no"/><tag>no</tag></item>
+    </one-of>
+    <item repeat="0-1"><ruleref uri="#politness"/></item>
+  </rule>
+
+  <rule id="yes">
+    <one-of>
+      <item>yes</item>
+      <item>yeah</item>
+      <item>yep</item>
+      <item>sure</item>
+      <item>of course</item>
+    </one-of>
+  </rule>
+
+  <rule id="no">
+    <one-of>
+      <item>no</item>
+      <item>not</item>
+      <item>nope</item>
+    </one-of>
+  </rule>
+
+  <rule id="politness">
+    <one-of>
+      <item> please </item>
+      <item> thanks </item>
+      <item> thank you </item>
+    </one-of>
+  </rule>
+
+</grammar>

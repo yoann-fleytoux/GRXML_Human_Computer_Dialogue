@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml" application="main.vxml">
+
+<meta name="author"
+      content="Vit Novacek, Faculty of Informatics, Masaryk University Brno,
+               Czaech Republic"/>
+<meta name="copyright"
+      content="Copyright (c) 2004 Vit Novacek; You can redistribute and/or modify
+               this file under the terms of the GNU General Public License"/>
+
+<form id="init">
+  <block>
+    <prompt>
+      You are in a hall. There are stairs leading up and other stairs,
+      which are descending to cellar. On the left hand side of the cellar
+      stairs is passage to the kitchen, on the right hand side you see the
+      living room door. The hall lookout is dominated by massive entrance
+      door with a forked green palm standing besides it. What do you want to
+      do?
+    </prompt>
+  </block>
+  <field name="action">
+    <noinput> Come on, you need to get home! </noinput>
+    <nomatch> Try to say something else. </nomatch>
+    <grammar src="lhall.grxml"/>
+    <grammar src="exit.grxml"/>
+  </field>
+  <filled namelist="action">
+    <if cond="action == 'exit'">
+      <goto next="#exit"/>
+    <else/>
+      <script>
+	<![CDATA[
+	  var intact=parseInt(action,10);
+	  trigger=process1(intact);
+	]]>
+      </script>
+      <prompt><value expr="prompt"/></prompt>
+      <if cond="trigger==1">
+        <goto next="uhall.vxml#init"/>
+      <elseif cond="trigger==2"/>
+        <goto next="cellar.vxml#init"/>
+      <elseif cond="trigger==3"/>
+        <goto next="kitchen.vxml#init"/>
+      <elseif cond="trigger==4"/>
+        <goto next="lroom.vxml#init"/>
+      <else/>
+        <goto next="#init"/>
+      </if>
+    </if>
+  </filled>
+</form>
+
+<form id="exit">
+  <field name="exit_ask">
+     <noinput> Hey, don't sleep! </noinput>
+     <nomatch> Say 'yes' or 'no' </nomatch>
+     <prompt> Do you really want to stop playing the game? </prompt>
+     <grammar src="yesno.grxml"/>
+     <filled>
+       <if cond="exit_ask=='yes'">
+         <prompt> Ok, let's go to the initial stage. </prompt>
+         <goto next="main.vxml#init"/>
+       <else/>
+         <prompt>
+           You've changed your mind? That's good, game continues...
+         </prompt>
+         <goto next="#init"/>
+       </if>
+     </filled>
+   </field>
+</form>
+
+</vxml>
+

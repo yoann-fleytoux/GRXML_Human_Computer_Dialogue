@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="Configuration of the Iterated Prisoner's Dilemma"/>
+<meta name="author" content="Laboratory of Speech and Dialogue, Faculty of
+  Informatics, Masaryk University Brno, Czech Republic"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<!--
+  The Prisoner's Dilemma is an important problem of the theory of cooperation.
+  It is based on the following scenario: Two accomplices in a crime are caught
+  and placed in separate cells so that they cannot communicate. A public
+  attorney tries to induce each one to turn evidence against the other
+  (i.e., to "defect"). Refusing to turn evidence against the other is to
+  "cooperate".
+
+  If both cooperate they will be both jailed for one year.
+  If both defect they will be both jailed for three years.
+  If one cooperates and one defects then that one who cooperates will be jailed
+    for six years and that one who defects will be freed.
+
+  The Iterated Prisoner's Dilemma is a game in which the Prisoner's Dilemma is
+  repeated with the same players several times and both players know the
+  outcomes of previous iterations. The task is to find the optimal strategy
+  for the Iterated Prisoner's Dilemma.
+
+  In order to make the problem even more interesting, 'noise' has been added
+  to the game - each computer's decision is inverted with certain probability.
+
+  Various parameters of the game and the strategy itself can be changed below.
+
+  This VoiceXML version of the problem has been presented at the 5th Summer
+  School of the European Masters in Language and Speech program in Bonn,
+  July 12-16, 2004 (http://www.ikp.uni-bonn.de/emls/index.html).
+-->
+
+<!-- number of game iterations -->
+<var name="iterCount" expr="15"/>
+
+<!-- probability of 'noise', i.e. probability of inverting
+     computer's answer -->
+<var name="noiseProb" expr="0.1"/>
+
+<!-- if both cooperate, price for both -->
+<var name="price2Coop" expr="1"/>
+
+<!-- if neither cooperates, price for both -->
+<var name="price2NotCoop" expr="3"/>
+
+<!-- if one cooperates, price for that one who cooperates -->
+<var name="price1Coop" expr="6"/>
+
+<!-- if one cooperates, price for that one who does not cooperate -->
+<var name="price1NotCoop" expr="0"/>
+
+<!-- array containing user's answers for all iterations -->
+<var name="userAnswers" expr="new Array()"/>
+
+<!-- array containing computers's answers for all iterations -->
+<var name="compAnswers" expr="new Array()"/>
+
+<!-- experiment with the strategy -->
+<script> <![CDATA[
+  function computerStrategy() {
+    // based on the history stored in the userAnswers and compAnswers
+    // arrays return true if you want to cooperate and false if you
+    // don't want to cooperate.
+
+    // couple of hints:
+    // 1. arrays userAnswers and compAnswers are accessible in this
+    //    script
+    // 2. any other variables you want to use must be declared
+    //    first by 'var <variableName>;' statement (see e.g. the
+    //    'i' variable in the 'for' cycle below)
+    // 3. the length of an array 'A' can be obtained as 'A.length'
+
+
+    // Tit For Tat strategy: cooperate at first and then repeat the other's
+    // move.
+    if (userAnswers.length == 0) return true;
+    else return userAnswers[userAnswers.length-1];
+  }
+]]> </script>
+
+</vxml>

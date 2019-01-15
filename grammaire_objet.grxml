@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://www.w3.org/2001/06/grammar" version="1.0" root="objet" xml:lang="fr">
+
+	<meta name="description" content="Horaire"/>
+	<meta name="author" content="Yoann Fleytoux"/>
+
+<rule id="objet" scope="public">
+	<item repeat ="0-1">
+	<ruleref uri="#filler_debut_phrase" /> 
+	</item>
+		<one-of>
+		  <item>apero</item>
+		  <item>anniversaire</item>
+		  <item>nouvel an</item>
+		</one-of>
+		<tag> out.text = meta.current().text  </tag>
+  </rule>
+  
+<rule id="filler_debut_phrase">
+	<item repeat ="0-1">
+      <one-of>
+              <item> pour </item>
+			  <item> pour le</item>
+			  <item> le </item>
+      </one-of>
+	</item>
+	<item repeat ="0-1">
+	<one-of>
+              <item> faire </item>
+      </one-of>
+	</item>
+</rule>
+</grammar>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="options and link example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<noinput> Hey, don't sleep! </noinput>
+<catch event="exit">
+  <prompt> Exit! </prompt>
+  <exit/>
+</catch>
+
+<link event="help">
+  <grammar root="main">
+    <rule id="main" scope="public">
+      <item repeat="0-1"> please </item>
+      <item repeat="0-1"> I need </item>
+      help
+      <item repeat="0-1"> me </item>
+      <item repeat="0-1"> please </item>
+    </rule>
+  </grammar>
+</link>
+
+<link event="exit">
+  <grammar root="main">
+    <rule id="main" scope="public">
+      <one-of>
+        <item>exit</item>
+        <item>quit</item>
+      </one-of>
+    </rule>
+  </grammar>
+</link>
+
+<form id="start">
+  <field name="lunch">
+    <nomatch>
+      <prompt> I didn't understand you. Please choose from <enumerate/> </prompt>
+    </nomatch>
+    <help> Just say what you want for lunch. </help>
+
+    <prompt> What do you want for lunch? You can choose from <enumerate/> </prompt>
+    <option dtmf="1" value="ch"> chicken </option>
+    <option dtmf="2" value="p"> pizza </option>
+    <option dtmf="3" value="c"> cake </option>
+    <option dtmf="4" value="n"> nothing </option>
+
+    <filled>
+      <if cond="lunch=='ch'">
+        <prompt> You will have chicken for lunch. </prompt>
+        <prompt> I like chicken too. </prompt>
+      <elseif cond="lunch=='p'"/>
+        <prompt> You will have pizza for lunch. </prompt>
+        <prompt> Fan of Italian kitchen?  </prompt>
+      <elseif cond="lunch=='c'"/>
+        <prompt> You will have cake for lunch. </prompt>
+        <prompt> You will be fat! </prompt>
+      <else/> <!-- lunch=='n' -->
+        <prompt> You will have nothing for lunch. </prompt>
+        <prompt> Diet? </prompt>
+      </if>
+    </filled>
+  </field>
+</form>
+
+</vxml>

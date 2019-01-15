@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ATTENTION : UTF-8 = PAS DE CARACTERES ACCENTUES -->
+<!-- si PB message : Invalid UTF-8 character --> 
+
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="Gestion agenda version 0"/>
+<meta name="author" content="Isabelle Ferrane"/>
+<meta name="copyright" content="IUP SI M2 Pro Dialogue"/>
+
+<!-- Version de base : gestion de dialogue et comprehension -->
+<!-- Demande et verification du numero d'abonne -->
+
+<!-- Activation de la grammaire permettant la detection des -->
+<!-- demandes d'aide formulees par l'utilisateur            -->
+
+<link event="help">
+<grammar src="grammaire_aide.grxml" type="application/srgs+xml" />
+</link>
+
+<catch event="exit">
+  <prompt>  Aurevoir! </prompt>
+  <exit/>
+</catch>
+
+<link event="exit">
+  <grammar src="exit.grxml"/>
+</link>
+
+<form id="agenda">
+
+<!-- initialisation des variables internes au formulaire -->
+<var name="reponse" />
+<var name="message_confirm" />
+
+<!-- declaration des variables Javascript -->
+<script>
+       <!-- exemple de gestion de la date au format Ecmascript --> 
+       <!-- Date courante -->
+		var now = new Date(2010, 11, 9, 15, 30, 0, 0);
+       <!-- Valeur de la date fournie par l'utilisateur -->
+		var date_choisie = new Date();
+       <!-- Activation/desactivation du mode TRACE -->
+		var mode_trace ="True";
+</script>
+
+<block>
+   	Bienvenue sur le service de gestion de votre agenda. 
+        Aujourd'hui nous sommes le <value expr="now.toString()" />
+   	<!-- affiche le nombre de millisecondes correspondant -->
+   	<value expr="now.valueOf()" />
+</block>
+
+<!-- Champ/Slot NUMERO D'ABONNE -->
+<field name="num_abonne">
+
+	 <prompt> Quel est votre numero d'abonne ? </prompt>
+
+         <!-- Appel a une grammaire externe -->
+	 <grammar src="grammaire_num_ab_v2.grxml" type="application/srgs+xml"/>
+
+         <!-- Gestion des erreurs -->
+        <help> Donner un nombre compris entre 1 et 2500 </help>
+        <noinput> Je n'ai pas entendu. Pouvez-vous me preciser votre numero d'abonne ? </noinput>
+		<nomatch> Je n'ai pas compris. Pouvez-vous me donner votre numero d'abonne S.V.P ? </nomatch>
+
+         <!-- Comportement du systeme une fois ce champ rempli -->
+	 <filled>
+			<if cond="num_abonne.nb &lt; 1">
+				 Numero d'abonne <value expr="num_abonne.text" /> trop petit
+				 <clear namelist="num_abonne" /> <!-- permet de recommencer le champ -->
+			<elseif cond="num_abonne.nb &gt; 2500"/>
+				Numero d'abonne <value expr="num_abonne.text" /> trop grand	
+				<clear namelist="num_abonne" />				
+			<else/>
+				 Votre numero d'abonne est le <value expr="num_abonne.text" /> 
+				 <if cond="mode_trace=='True'">
+				   TRACE Valeur numero d'abonne  <value expr="num_abonne.nb" />
+				 </if>
+			</if>
+			
+	 </filled>
+  </field>
+
+<!-- Champ/Slot de confirmation num_abonne -->
+  <field name="confirm_num_abonne">
+        <prompt> Confirmez-vous que votre numero d'abonne est: <value expr="num_abonne.text" /> ? </prompt>
+         
+         <!-- Appel a une grammaire externe -->
+         <grammar src="grammaire_act_lang_confirmation_v2.grxml" type="application/srgs+xml" />
+         
+         <!-- Gestion des erreurs -->
+         <help> Repondez par oui ou non </help>
+         <noinput> Je n'ai pas entendu. Pouvez-vous repeter ? </noinput>
+         <nomatch> Je ne vous ai pas compris. Pouvez-vous repondre par oui ou par non </nomatch>
+         
+         <!-- Comportement du systeme apres confirmation/infirmation --> 
+         <!-- OK ==> On sort ou on passe a une autre sous-tache -->
+         <!-- NOK ==> On efface tout et on recommence --> 
+
+         <filled>
+                 <if cond="confirm_num_abonne=='True'">
+                     <assign name="message_confirm" expr="'TRACE Numero confirme'" />
+                 <else/>
+                     <assign name="message_confirm" expr="'TRACE Numero non confirme'" />
+                     <clear namelist="num_abonne confirm_num_abonne" />
+                 </if>
+                 <!-- Comportement si le mode TRACE est active --> 
+
+                 <if cond="mode_trace=='True'">
+                   TRACE Reponse <value expr="message_confirm" />
+                 </if>
+         </filled>
+
+</field>
+
+<block>
+       <!-- Simulation autorisation d'acces -->
+	Veuillez patienter ... Nous nous connectons a la base abonne....
+        Bonjour Monsieur Dupont. Vous pouvez maintenant acceder a votre agenda !
+</block>
+
+<!-- Champ/Slot DATE RENDEZ VOUS -->
+<field name="date_rendezvous">
+
+	 <prompt> A quel date voulez-vous votre rendez-vous ? </prompt>
+
+         <!-- Appel a une grammaire externe -->
+	 <grammar src="grammaire_dates_v3.grxml" type="application/srgs+xml"/>
+
+         <!-- Gestion des erreurs -->
+        <help> Donner une date au format écrit </help>
+        <noinput> Je n'ai pas entendu. Pouvez-vous me preciser la date de votre rendez-vous ? </noinput>
+		<nomatch> Je n'ai pas compris. Pouvez-vous me donner la date de votre rendez-vous S.V.P ? </nomatch>
+		
+		 <!-- Comportement du systeme apres confirmation/infirmation --> 
+         <!-- OK ==> On sort ou on passe a une autre sous-tache -->
+         <!-- NOK ==> On efface tout et on recommence --> 
+
+         <filled>
+                 <!-- Comportement si le mode TRACE est active --> 
+
+                 <if cond="mode_trace=='True'">
+				   TRACE Valeur  <value expr="date_rendezvous.nb_jour" /> <value expr="date_rendezvous.num_mois" /> <value expr="date_rendezvous.nb_annee" />
+				 </if>
+         </filled>
+
+</field>
+
+<!-- Champ/Slot de confirmation date_rendezvous -->
+  <field name="confirm_date_rendezvous">
+         <prompt> Confirmez-vous la date du rendez vous:  <value expr="date_rendezvous.text" /> ? </prompt>
+         
+         <!-- Appel a une grammaire externe -->
+         <grammar src="grammaire_act_lang_confirmation_v2.grxml" type="application/srgs+xml" />
+         
+         <!-- Gestion des erreurs -->
+         <help> Repondez par oui ou non </help>
+         <noinput> Je n'ai pas entendu. Pouvez-vous repeter ? </noinput>
+         <nomatch> Je ne vous ai pas compris. Pouvez-vous repondre par oui ou par non </nomatch>
+         
+         <!-- Comportement du systeme apres confirmation/infirmation --> 
+         <!-- OK ==> On sort ou on passe a une autre sous-tache -->
+         <!-- NOK ==> On efface tout et on recommence --> 
+
+         <filled>
+                 <if cond="confirm_date_rendezvous=='True'">
+                     <assign name="message_confirm" expr="'TRACE date_rendezvous confirme'" />
+                 <else/>
+                     <assign name="message_confirm" expr="'TRACE date_rendezvous non confirme'" />
+                     <clear namelist="date_rendezvous confirm_date_rendezvous" />
+                 </if>
+                 <!-- Comportement si le mode TRACE est active --> 
+
+                 <if cond="mode_trace=='True'">
+                   TRACE Reponse <value expr="message_confirm" />
+                 </if>
+         </filled>
+
+</field>
+
+<!-- Champ/Slot horaire RENDEZ VOUS -->
+<field name="horaire_rendezvous">
+
+	<prompt> A quel horaire voulez-vous votre rendez-vous ? </prompt>
+
+	 <!-- Appel a une grammaire externe -->
+	<grammar src="fleytoux_horaire_v2.grxml" type="application/srgs+xml"/>
+
+	 <!-- Gestion des erreurs -->
+	<help> Donner une date au format écrit </help>
+	<noinput> Je n'ai pas entendu. Pouvez-vous me preciser l'horaire de votre rendez-vous ? </noinput>
+	<nomatch> Je n'ai pas compris. Pouvez-vous me donner l'horaire de votre rendez-vous S.V.P ? </nomatch>
+
+	<filled>
+		<!-- valide si NB_MN entre 450 et 1290, H_untouched plus petit que 24 et MN_untouched plus petit que 60 --> 
+		<if cond="horaire_rendezvous.H_untouched &gt; 23">
+			horaire rendez-vous <value expr="horaire_rendezvous.text" /> invalide (nombre d'heures trop grand)
+			<clear namelist="horaire_rendezvous" /> 
+			
+		<elseif cond="horaire_rendezvous.MN_untouched &gt; 59"/>
+			horaire rendez-vous <value expr="horaire_rendezvous.text" /> invalide (nombre de minutes trop grand)
+			<clear namelist="horaire_rendezvous" /> 
+			
+		<elseif cond="horaire_rendezvous.NB_MN &lt; 450"/>
+			horaire rendez-vous <value expr="horaire_rendezvous.text" /> trop tot
+			<clear namelist="horaire_rendezvous" /> 
+			
+		<elseif cond="horaire_rendezvous.NB_MN &gt; 1290"/>
+			horaire rendez-vous <value expr="horaire_rendezvous.text" /> trop tard	
+			<clear namelist="horaire_rendezvous" />		
+			
+		<else/>
+			 <!-- Comportement si le mode TRACE est active --> 
+		
+			 <if cond="mode_trace=='True'">
+			   TRACE Valeur  <value expr="horaire_rendezvous.H" /> <value expr="horaire_rendezvous.MN" /> <value expr="horaire_rendezvous.NB_MN" />
+			 </if>
+		</if>
+	</filled>
+</field>
+	
+<!-- Champ/Slot de confirmation horaire_rendezvous -->
+  <field name="confirm_horaire_rendezvous">
+         <prompt> Confirmez-vous l'horaire du rendez vous:  <value expr="horaire_rendezvous.text" /> ? </prompt>
+         
+         <!-- Appel a une grammaire externe -->
+         <grammar src="grammaire_act_lang_confirmation_v2.grxml" type="application/srgs+xml" />
+         
+         <!-- Gestion des erreurs -->
+         <help> Repondez par oui ou non </help>
+         <noinput> Je n'ai pas entendu. Pouvez-vous repeter ? </noinput>
+         <nomatch> Je ne vous ai pas compris. Pouvez-vous repondre par oui ou par non </nomatch>
+         
+         <!-- Comportement du systeme apres confirmation/infirmation --> 
+         <!-- OK ==> On sort ou on passe a une autre sous-tache -->
+         <!-- NOK ==> On efface tout et on recommence --> 
+
+         <filled>
+                 <if cond="confirm_horaire_rendezvous=='True'">
+                     <assign name="message_confirm" expr="'TRACE horaire_rendezvous confirme'" />
+                 <else/>
+                     <assign name="message_confirm" expr="'TRACE horaire_rendezvous non confirme'" />
+                     <clear namelist="horaire_rendezvous confirm_horaire_rendezvous" />
+                 </if>
+                 <!-- Comportement si le mode TRACE est active --> 
+
+                 <if cond="mode_trace=='True'">
+                   TRACE Reponse <value expr="message_confirm" />
+                 </if>
+         </filled>
+
+</field>
+
+<!-- Champ/Slot personne RENDEZ VOUS -->
+<field name="personne_rendezvous">
+
+	 <prompt> Avec qui voulez-vous votre rendez-vous ? </prompt>
+
+         <!-- Appel a une grammaire externe -->
+	 <grammar src="grammaire_personne.grxml" type="application/srgs+xml"/>
+
+         <!-- Gestion des erreurs -->
+        <help> Mr Fleytoux ou Mr Bernier ou Mr Ibrahim </help>
+        <noinput> Je n'ai pas entendu. Pouvez-vous me preciser la date de votre rendez-vous ? </noinput>
+		<nomatch> Je n'ai pas compris. Pouvez-vous me donner la date de votre rendez-vous S.V.P ? </nomatch>
+		
+		 <!-- Comportement du systeme apres confirmation/infirmation --> 
+         <!-- OK ==> On sort ou on passe a une autre sous-tache -->
+         <!-- NOK ==> On efface tout et on recommence --> 
+
+         <filled>
+			<!-- Comportement si le mode TRACE est active --> 
+			<if cond="mode_trace=='True'">
+			   TRACE Valeur  <value expr="personne_rendezvous.text" /> 
+			</if>
+         </filled>
+
+</field>
+
+<!-- Champ/Slot LIEU RENDEZ VOUS -->
+<field name="lieu_rendezvous">
+
+	 <prompt> Ou voulez-vous votre rendez-vous ? </prompt>
+
+         <!-- Appel a une grammaire externe -->
+	 <grammar src="grammaire_lieu.grxml" type="application/srgs+xml"/>
+
+         <!-- Gestion des erreurs -->
+        <help> Agence ou Bureau ou Chateau </help>
+        <noinput> Je n'ai pas entendu. Pouvez-vous me preciser la date de votre rendez-vous ? </noinput>
+		<nomatch> Je n'ai pas compris. Pouvez-vous me donner la date de votre rendez-vous S.V.P ? </nomatch>
+		
+		 <!-- Comportement du systeme apres confirmation/infirmation --> 
+         <!-- OK ==> On sort ou on passe a une autre sous-tache -->
+         <!-- NOK ==> On efface tout et on recommence --> 
+
+         <filled>
+			<!-- Comportement si le mode TRACE est active --> 
+			<if cond="mode_trace=='True'">
+			   TRACE Valeur  <value expr="lieu_rendezvous.text" /> 
+			</if>
+         </filled>
+
+</field>
+
+<!-- appel à un sous-dialogue et spécification des paramètres et de leurs valeurs --> 
+<subdialog name = "sous_dialogue_de_confirmation_Lieu" src= "gestion_agenda_sous_dialogue.grxml">
+<!-- <param name ="confirmHeure" expr= "vrai" /> <param name ="nom_parametre2" expr= "valeur parametre2" />-->
+<filled>
+<prompt> la valeur récupéré est <value expr= "sous_dialogue_de_confirmation_Lieu.confirm"/> </prompt>
+                 <if cond="sous_dialogue_de_confirmation_Lieu.confirm=='True'">
+                     <assign name="message_confirm" expr="'TRACE lieu rendez vous confirme'" />
+                 <else/>
+                     <assign name="message_confirm" expr="'TRACE lieu rendez vous non confirme'" />
+                     <clear namelist="lieu_rendezvous sous_dialogue_de_confirmation_Lieu.confirm" />
+                 </if>
+                 <!-- Comportement si le mode TRACE est active --> 
+
+                 <if cond="mode_trace=='True'">
+                   TRACE Reponse <value expr="message_confirm" />
+                 </if>
+</filled>
+</subdialog>
+
+<!-- Champ/Slot LIEU RENDEZ VOUS -->
+<field name="objet_rendezvous">
+
+	 <prompt> Quel objet pour votre rendez-vous ? </prompt>
+
+         <!-- Appel a une grammaire externe -->
+	 <grammar src="grammaire_objet.grxml" type="application/srgs+xml"/>
+
+         <!-- Gestion des erreurs -->
+        <help> Agence ou Bureau ou Chateau </help>
+        <noinput> Je n'ai pas entendu. Pouvez-vous me preciser la date de votre rendez-vous ? </noinput>
+		<nomatch> Je n'ai pas compris. Pouvez-vous me donner la date de votre rendez-vous S.V.P ? </nomatch>
+		
+		 <!-- Comportement du systeme apres confirmation/infirmation --> 
+         <!-- OK ==> On sort ou on passe a une autre sous-tache -->
+         <!-- NOK ==> On efface tout et on recommence --> 
+
+         <filled>
+			<!-- Comportement si le mode TRACE est active --> 
+			<if cond="mode_trace=='True'">
+			   TRACE Valeur  <value expr="objet_rendezvous.text" /> 
+			</if>
+         </filled>
+
+</field>
+
+
+<block>
+       <!-- Simulation autorisation d'acces -->
+	   Rendez vous le <value expr="date_rendezvous.text" /> <value expr="horaire_rendezvous.text" /> <value expr="lieu_rendezvous.text" /> <value expr="personne_rendezvous.text" /> <value expr="objet_rendezvous.text" /> confirme.
+       Aurevoir Monsieur Dupont!
+</block>
+
+</form>
+</vxml>

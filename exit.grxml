@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar root="exit" version="1.0" xml:lang="fr">
+
+  <meta name="description" content="grammaire sortie"/>
+  <meta name="author" content="Yoann Fleytoux"/>
+  <meta name="copyright" content="M2 Pro Dialogue"/>
+
+  <rule id="exit" scope="public">
+    <one-of>
+      <item>exit</item>
+      <item>quit</item>
+	  <item>aurevoir</item>
+	  <item>bye</item>
+	  <item>salut</item>
+    </one-of>
+  </rule>
+</grammar>

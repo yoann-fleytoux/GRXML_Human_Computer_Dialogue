@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar root="main" version="1.0" xml:lang="en">
+
+  <meta name="description" content="from/to city grammar"/>
+  <meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+  <meta name="copyright" content="free for any purpose"/>
+
+  <rule id="main" scope="public">
+    <item repeat="0-1">
+      <ruleref uri="#filler"/>
+    </item>
+    <one-of>
+      <item>
+        from
+        <ruleref uri="#city"/> <tag> out.from = rules.city; </tag>
+        to
+        <ruleref uri="#city"/> <tag> out.to = rules.city; </tag>
+      </item>
+      <item>
+        from
+        <ruleref uri="#city"/> <tag> out.from = rules.city; </tag>
+      </item>
+      <item>
+        to
+        <ruleref uri="#city"/> <tag> out.to = rules.city; </tag>
+      </item>
+    </one-of>
+  </rule>
+
+  <rule id="from" scope="public">
+    <item repeat="0-1">
+      <ruleref uri="#filler"/>
+    </item>
+    <item repeat="0-1">
+      from
+    </item>
+    <ruleref uri="#city"/> <tag> out.from = rules.city; </tag>
+  </rule>
+
+  <rule id="to" scope="public">
+    <item repeat="0-1">
+      <ruleref uri="#filler"/>
+    </item>
+    <item repeat="0-1">
+      to
+    </item>
+    <ruleref uri="#city"/> <tag> out.to = rules.city; </tag>
+  </rule>
+
+  <rule id="filler">
+    I want
+    <item repeat="0-1">
+      to fly
+    </item>
+  </rule>
+
+  <rule id="city">
+    <one-of>
+      <item> London </item>
+      <item> Prague </item>
+      <item> Rome </item>
+    </one-of>
+  </rule>
+</grammar>

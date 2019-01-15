@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="Calling OptimTalk Object example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<noinput> Hey, don't sleep! </noinput>
+
+<var name="apptolaunch"/>
+
+<form>
+  <field name="apptolaunch">
+    <prompt>
+      Welcome. The power of external functions will be demonstrated to you.
+      Choose one of the following applications, I will launch it for you. 
+      <enumerate/>
+    </prompt>
+
+    <nomatch>
+      <prompt>I didn't understand you. Please choose from the following list: <enumerate/></prompt>
+    </nomatch>
+
+    <option dtmf="1" value="mc"> midnight commander </option>
+    <option dtmf="2" value="ls"> directory listing </option>
+    <option dtmf="3" value="lynx"> lynx </option>
+    <option dtmf="4" value="none"> none </option>
+
+    <filled>
+      <if cond="apptolaunch=='none'">
+        <prompt> OK, I will launch no application. Goodbye. </prompt>
+        <exit/>
+      <else/>
+        <assign name="application.apptolaunch" expr="dialog.apptolaunch"/>
+        <goto next="#launch"/>
+      </if>
+    </filled>
+  </field>
+</form>
+
+<form id="launch">
+  <block>
+    <prompt> Launching the selected application </prompt>
+
+    <script> <![CDATA[
+      var objAttrs = new Object();
+      objAttrs.classid="appcall#appCall";
+      objAttrs.codetype="application/x-ot-extfn";
+      var params = new Object();
+      params.app = apptolaunch;
+      params.params = ''; // this example cannot pass any parameters to the application
+      CallOptimTalkObject (objAttrs, params);
+    ]]> </script>
+  </block>
+
+  <catch event="error.semantic">
+    <prompt> External function failed. Error message: <value expr="_message"/></prompt>
+    <exit/>
+  </catch>
+
+  <block>
+    External function was successful.
+  </block>
+</form>
+
+</vxml>

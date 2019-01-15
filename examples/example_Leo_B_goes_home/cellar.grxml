@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<grammar root="command" version="1.0" xml:lang="en">
+
+  <meta name="author"
+        content="Vit Novacek, Faculty of Informatics, Masaryk University Brno,
+                 Czaech Republic"/>
+  <meta name="copyright"
+        content="Copyright (c) 2004 Vit Novacek; You can redistribute and/or modify
+                 this file under the terms of the GNU General Public License"/>
+
+  <rule id="command" scope="public">
+    <item repeat="0-1"><ruleref uri="#modus"/></item>
+    <one-of>
+      <item>go <ruleref uri="#places"/><tag>out.action=rules.places</tag></item>
+      <item><ruleref uri="#exam"/><tag>out.action=rules.exam</tag></item>
+      <item><ruleref uri="#take"/><tag>out.action=rules.take</tag></item>
+      <item><ruleref uri="#use"/><tag>out.action=rules.use</tag></item>
+      <item><ruleref uri="#invent"/><tag>out.action=255</tag></item>
+    </one-of>
+  </rule>
+
+  <rule id="invent">
+    <one-of>
+      <item>see</item>
+      <item>know</item>
+    </one-of>
+    <one-of>
+      <item>what</item>
+      <item>the stuff</item>
+      <item>my loot</item>
+    </one-of>
+    <item repeat="0-1">I have</item>
+  </rule>
+
+  <rule id="modus">
+    <one-of>
+      <item>I'd like to</item>
+      <item>I want to</item>
+      <item>I wanna</item>
+    </one-of>
+  </rule>
+  <rule id="places">
+    <one-of>
+      <item>upstairs <tag>out=10</tag></item>
+      <item>up <tag>out=10</tag></item>
+    </one-of>
+  </rule>
+  <rule id="exam">
+    <one-of>
+      <item>examine</item>
+      <item>look at</item>
+    </one-of>
+    <item repeat="0-1">the</item>
+    <one-of>
+      <item><ruleref uri="#trap"/><tag>out=20</tag></item>
+      <item><ruleref uri="#machine"/><tag>out=21</tag></item>
+      <item><ruleref uri="#beer"/><tag>out=22</tag></item>
+    </one-of>
+  </rule>
+  <rule id="take">
+    <one-of>
+      <item>take</item>
+      <item>pick up</item>
+    </one-of>
+    <item repeat="0-1">the</item>
+    <one-of>
+      <item><ruleref uri="#trap"/><tag>out=30</tag></item>
+      <item><ruleref uri="#machine"/><tag>out=31</tag></item>
+      <item><ruleref uri="#beer"/><tag>out=32</tag></item>
+    </one-of>
+  </rule>
+  <rule id="use">
+    <item>use</item>
+    <item repeat="0-1">the</item>
+    <one-of>
+      <item><ruleref uri="#trap"/><tag>out=40</tag></item>
+      <item><ruleref uri="#machine"/><tag>out=41</tag></item>
+      <item><ruleref uri="#beer"/><tag>out=42</tag></item>
+      <item><ruleref uri="#cheese"/><tag>out=43</tag></item>
+      <item><ruleref uri="#cat"/><tag>out=44</tag></item>
+      <item><ruleref uri="#wand"/><tag>out=45</tag></item>
+    </one-of>
+  </rule>
+
+  <rule id="trap">
+    <item repeat="0-1">mouse</item><item>trap</item>
+  </rule>
+  <rule id="machine">
+    <item repeat="0-1">washing</item><item>machine</item>
+  </rule>
+  <rule id="beer">
+    <item>beer</item><item repeat="0-1">can</item>
+  </rule>
+  <rule id="cheese">
+    <item>cheese</item>
+  </rule>
+  <rule id="cat">
+    <item>cat</item>
+  </rule>
+  <rule id="wand">
+    <item repeat="0-1">magic</item><item>wand</item>
+  </rule>
+</grammar>

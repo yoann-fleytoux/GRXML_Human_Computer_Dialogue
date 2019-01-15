@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="Pizza ordering"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<link event="help">
+  <grammar root="main">
+    <rule id="main" scope="public">
+      <item repeat="0-1"> please </item>
+      <item repeat="0-1"> I need </item>
+      help
+      <item repeat="0-1"> me </item>
+      <item repeat="0-1"> please </item>
+    </rule>
+  </grammar>
+</link>
+
+<form id="start">
+  <var name="summarization"/>
+
+  <nomatch>
+    <prompt> I didn't understand you. </prompt>
+    <reprompt/>
+  </nomatch>
+  <nomatch count="3">
+    <prompt> I didn't understand you again. This is your last chance. </prompt>
+    <reprompt/>
+  </nomatch>
+  <nomatch count="4">
+    <prompt> Sorry, I didn't understand you again. I am giving up. Bye. </prompt>
+    <exit/>
+  </nomatch>
+
+  <help>
+    Sorry, no help is available.
+  </help>
+
+  <grammar src="pizza.grxml"/>
+
+  <initial name="mixed">
+    Welcome to the pizza ordering service. Please specify your order.
+    <nomatch>
+      I didn't understand you. Please specify number, size
+      and topping of your pizzas and kind of drink.
+    </nomatch>
+    <nomatch count="2">
+      Sorry, I still don't understand you. I will ask you for the information
+      one piece at a time.
+      <assign name="mixed" expr="true"/>
+      <reprompt/>
+    </nomatch>
+    <help>
+      You can specify number, size and topping of your pizzas and
+      kind of drink.
+    </help>
+  </initial>
+
+  <filled mode="any" namelist="pizzanumber pizzasize pizzatopping">
+    <assign name="summarization" expr="'I understood that you want '"/>
+  </filled>
+
+  <field name="pizzanumber" slot="pizza.number">
+    How many pizzas do you want?
+    <grammar src="pizza.grxml#ordernumber"/>
+    <nomatch>
+      I didn't understand you. Please say the number of pizzas you want.
+    </nomatch>
+    <help>
+      Please say the number of pizzas you want.
+    </help>
+    <filled>
+      <assign name="summarization" expr="summarization + pizzanumber + ' '"/>
+    </filled>
+  </field>
+
+  <field name="pizzasize" slot="pizza.size">
+    What size of pizzas do you want?
+    <grammar src="pizza.grxml#ordersize"/>
+    <nomatch>
+      I didn't understand you. Please say what size of the pizzas you want.
+    </nomatch>
+    <nomatch count="2">
+      I didn't understand you. Please say what size of the pizzas you want.
+      You can choose from small, medium and large.
+    </nomatch>
+    <help>
+      Please say what size of pizzas you want. You can choose from small,
+      medium and large.
+    </help>
+    <filled>
+      <assign name="summarization" expr="summarization + pizzasize + ' '"/>
+    </filled>
+  </field>
+
+  <filled mode="any" namelist="pizzanumber pizzasize pizzatopping">
+    <if cond="pizzanumber == 1">
+      <assign name="summarization" expr="summarization + 'pizza '"/>
+    <else/>
+      <assign name="summarization" expr="summarization + 'pizzas '"/>
+    </if>
+  </filled>
+
+  <field name="pizzatopping" slot="pizza.topping">
+    What do you want on the top of the pizzas?
+    <grammar src="pizza.grxml#ordertoppings"/>
+    <nomatch>
+      I didn't understand you. Please say what you want on the top of your pizzas.
+    </nomatch>
+    <nomatch count="2">
+      I didn't understand you. Say something like ham and cheese.
+    </nomatch>
+    <help>
+      Please say what you want on the top of your pizzas. Say something like
+      ham and cheese.
+    </help>
+    <filled>
+      <script> <![CDATA[
+        summarization += 'with ';
+        for (var i = 0; i < pizzatopping.length; i++) {
+          summarization += pizzatopping[i];
+          if (i != pizzatopping.length - 1) summarization += ' and ';
+          else summarization += '.';
+        }
+      ]]> </script>
+    </filled>
+  </field>
+
+  <filled mode="any" namelist="pizzanumber pizzasize pizzatopping">
+    <prompt>
+      <value expr="summarization"/>
+    </prompt>
+  </filled>
+
+  <field name="drink">
+    What do you want to drink?
+    <grammar src="pizza.grxml#orderdrink"/>
+    <nomatch>
+      I didn't understand you. Please say what you want to drink.
+    </nomatch>
+    <help>
+      Please say what you want to drink.
+    </help>
+    <filled>
+      <if cond="drink == 'none'">
+        <prompt> I understood that you don't want any drink. </prompt>
+      <else/>
+        <prompt> I understood that you will drink <value expr="drink"/>. </prompt>
+      </if>
+    </filled>
+  </field>
+
+  <block>
+    <script> <![CDATA[
+      summarization = pizzanumber;
+      summarization += ' ';
+      summarization += pizzasize;
+      if (pizzanumber == 1) summarization += ' pizza ';
+      else summarization += ' pizzas ';
+      summarization += 'with ';
+      for (var i = 0; i < pizzatopping.length; i++) {
+        summarization += pizzatopping[i];
+        summarization += ' and ';
+      }
+      if (drink == 'none') summarization += 'nothing';
+      else summarization += drink;
+      summarization += ' to drink.';
+    ]]> </script>
+    <prompt>
+      Thank you for your order. You ordered <value expr="summarization"/>
+    </prompt>
+  </block>
+</form>
+
+</vxml>
