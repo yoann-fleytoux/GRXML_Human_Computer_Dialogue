@@ -16,7 +16,7 @@
 </catch>
 
 <link event="exit">
-  <grammar src="exit.grxml"/>
+  <grammar src="grammaire_exit.grxml"/>
 </link>
 
 <!-- declaration des variables Javascript -->
@@ -28,6 +28,16 @@
 <!-- start to interpret this file -->
 
 <form id="orientation">
+	<var name="target"/>
+
+	<subdialog name = "donner_num_abonne" src= "donner_num_abonne_sous_dialogue.vxml">
+	<filled>
+				 Votre numero d'abonne est le <value expr="donner_num_abonne.num_abonne.text" /> 
+					 <if cond="mode_trace=='True'">
+					   TRACE VALEUR  <value expr="donner_num_abonne.num_abonne.nb" />
+					 </if>
+	</filled>
+	</subdialog>
 
   <!-- since we dont need to send informations forms, we use goto to go to other froms -->
   <!-- if it was the case we would use subdialogs -->
@@ -43,32 +53,82 @@
 
 		<!-- Gestion des erreurs -->
 		<help> insert, select, update, delete </help>
-		<noinput> Je n'ai pas entendu. Pouvez-vous me preciser votre numero d'abonne ? </noinput>
-		<nomatch> Je n'ai pas compris. Pouvez-vous me donner votre numero d'abonne S.V.P ? </nomatch>
+		<noinput> Je n'ai pas entendu. Pouvez-vous me preciser votre requete ? </noinput>
+		<nomatch> Je n'ai pas compris. Pouvez-vous me preciser votre requete  ? </nomatch>
 
 		<!-- Comportement du systeme une fois ce champ rempli -->
 		<filled>
 			<!-- Comportement si le mode TRACE est active --> 
 			<if cond="mode_trace=='True'">
-			   TRACE VALEUR  <value expr="orientation.text" /> RESULT <value expr="orientation.result" /> 
+			   TRACE VALEUR  <value expr="orientation.text" /> COMMANDE BDD <value expr="orientation.command"/>  <value expr="donner_num_abonne.num_abonne.nb" />
 			</if>
 			<!-- disu -->
 			<if cond="orientation.result == '0'">
-				<goto next="delete.vxml"/> <!-- go to another dialog -->
+				<assign name="target" expr="'delete_block'"/>
+				<goto expritem="target"/> <!-- go to another dialog -->
 			</if>
 			<if cond="orientation.result == '1'">
-				<goto next="insert.vxml"/> <!-- go to another dialog -->
+				<assign name="target" expr="'insert'"/>
+				<goto expritem="target"/> <!-- go to another dialog -->
 			</if>
 			<if cond="orientation.result == '2'">
-				<goto next="select.vxml"/> <!-- go to another dialog -->
+				<assign name="target" expr="'select'"/>
+				<goto expritem="target"/> <!-- go to another dialog -->
 			</if>
 			<if cond="orientation.result == '3'">
-				<goto next="update.vxml"/> <!-- go to another dialog -->
+				<assign name="target" expr="'update'"/>
+				<goto expritem="target"/> <!-- go to another dialog -->
 			</if>
 			
          </filled>
 	</field>
-  
+	
+	<subdialog name = "select" src= "select.vxml">
+		<filled>
+			Vous avez un rendez-vous le <value expr="select.donner_date_rdv.date_rdv.text" /> durant le  <value expr="select.periode_rendezvous.text" /> a <value expr="select.periode_rendezvous.heure"/> heures
+			 <if cond="mode_trace=='True'">
+				COMMANDE BDD SELECT * FROM rendez-vous WHERE num_client = <value expr="donner_num_abonne.num_abonne.nb" /> AND jour=  <value expr="select.donner_date_rdv.date_rdv.nb_jour" /> AND mois = <value expr="select.donner_date_rdv.date_rdv.nb_mois" />AND annee = <value expr="select.donner_date_rdv.date_rdv.nb_annee" />
+			 </if>
+			 <assign name="target" expr="'orientation'"/>
+			 <goto expritem="target"/>
+		</filled>
+	</subdialog>
+	
+	<subdialog name = "delete_block" src= "delete.vxml">
+		<filled>
+			Vous avez bien supprimer le rendez-vous du <value expr="delete_block.sous_dialogue_de_suppression_rdv.date_rdv_a_supprimer.text" /> a heure=<value expr="delete_block.sous_dialogue_de_suppression_rdv.horaire_rdv_a_supprimer.h" /> heures et minute= <value expr="delete_block.sous_dialogue_de_suppression_rdv.horaire_rdv_a_supprimer.min" /> minutes
+			 <if cond="mode_trace=='True'">
+				COMMANDE BDD DELETE * FROM rendez-vous WHERE num_client = <value expr="donner_num_abonne.num_abonne.nb" /> AND jour=  <value expr="delete_block.sous_dialogue_de_suppression_rdv.date_rdv_a_supprimer.nb_jour" /> AND mois = <value expr="delete_block.sous_dialogue_de_suppression_rdv.date_rdv_a_supprimer.nb_mois" /> AND annee=<value expr="delete_block.sous_dialogue_de_suppression_rdv.date_rdv_a_supprimer.nb_annee" /> AND heure=<value expr="delete_block.sous_dialogue_de_suppression_rdv.horaire_rdv_a_supprimer.h" /> AND minute= <value expr="delete_block.sous_dialogue_de_suppression_rdv.horaire_rdv_a_supprimer.min" />
+			 </if>
+			 <assign name="target" expr="'orientation'"/>
+			 <goto expritem="target"/>
+		</filled>
+	</subdialog>
+	
+	<subdialog name = "insert" src= "insert.vxml">
+		<filled>
+			donner_date_rdv  donner_lieu_rdv donner_objet_rdv
+			Vous avez bien ajouter un rendez-vous  a <value expr="insert.donner_lieu_rdv.lieu_rdv.lieu" />  pour <value expr="insert.donner_objet_rdv.objet_rdv.objet" /> durant le <value expr="insert.donner_date_rdv.date_rdv.text" />  a <value expr="insert.donner_heure_rdv.heure_rdv.text" /> 
+			 <if cond="mode_trace=='True'">
+				COMMANDE BDD INSERT INTO rendez-vous(jour,mois,annee,heure,minute,lieu,objet,num_abonne) VALUES(<value expr="insert.donner_date_rdv.date_rdv.nb_jour" />,<value expr="insert.donner_date_rdv.date_rdv.nb_mois" />,<value expr="insert.donner_date_rdv.date_rdv.nb_annee" />,<value expr="insert.donner_heure_rdv.heure_rdv.h" />,<value expr="insert.donner_heure_rdv.heure_rdv.min" />,<value expr="insert.donner_lieu_rdv.lieu_rdv.lieu" />,<value expr="insert.donner_objet_rdv.objet_rdv.objet" />,num_client = <value expr="donner_num_abonne.num_abonne.nb" />)
+			 </if>
+			 <assign name="target" expr="'orientation'"/>
+			 <goto expritem="target"/>
+		</filled>
+	</subdialog>
+	
+	<subdialog name = "update" src= "update.vxml">
+		<filled>
+			Vous avez donc maintenant un rendez-vous le <value expr="update.sous_dialogue_de_deplacement_rdv.date_rdv_a_deplacer.text" /> a <value expr="update.sous_dialogue_de_deplacement_rdv.horaire_rdv_a_deplacer.text" />
+			 <if cond="mode_trace=='True'">
+				COMMANDE BDD UPDATE rendez-vous SET heure=<value expr="update.sous_dialogue_de_deplacement_rdv.horaire_rdv_a_deplacer.h" />,minute=<value expr="update.sous_dialogue_de_deplacement_rdv.horaire_rdv_a_deplacer.min" />  WHERE num_client = <value expr="donner_num_abonne.num_abonne.nb" /> AND jour=  <value expr="update.sous_dialogue_de_deplacement_rdv.date_rdv_a_deplacer.nb_jour" /> AND mois = <value expr="update.sous_dialogue_de_deplacement_rdv.date_rdv_a_deplacer.nb_mois" />AND annee = <value expr="update.sous_dialogue_de_deplacement_rdv.date_rdv_a_deplacer.nb_annee" />
+			 </if>
+			 <assign name="target" expr="'orientation'"/>
+			 <goto expritem="target"/>
+		</filled>
+	</subdialog>
+	
+	
 </form>
 
 </vxml>

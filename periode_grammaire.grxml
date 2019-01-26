@@ -20,10 +20,7 @@
 			</item>
 
 		</one-of>
-		<tag> out.text = rules.latest().text; out.result = rules.latest().result </tag>
-	<item repeat ="0-1">
-	<ruleref uri="#filler_fin_phrase" /> 
-	</item>
+		<tag> out.text = rules.latest().text; out.heure = rules.latest().heure </tag>
   </rule>
   
   
@@ -31,21 +28,21 @@
 	<one-of>
 		  <item> matin </item>
 	</one-of>
-	<tag> out.text = meta.current().text + " "; out.result=0 </tag> 
+	<tag> out.text = meta.current().text + " "; out.heure=8 </tag> 
 </rule>
   
 <rule id="aprem">
 	<one-of>
 		  <item> aprem </item>
 	</one-of>
-	<tag> out.text = meta.current().text + " "; out.result=1 </tag> 
+	<tag> out.text = meta.current().text + " "; out.heure=14 </tag> 
 </rule>
 
 <rule id="soir">
 	<one-of>
 		  <item> soir </item>
 	</one-of>
-	<tag> out.text = meta.current().text + " "; out.result=2 </tag> 
+	<tag> out.text = meta.current().text + " "; out.heure=20 </tag> 
 </rule>
 
 <rule id="filler_debut_phrase">
@@ -54,9 +51,4 @@
       </one-of>
 </rule>
 
-<rule id="filler_fin_phrase">
-      <one-of>
-              <item> lol2 </item>
-      </one-of>
-</rule>
 </grammar>

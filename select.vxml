@@ -16,7 +16,7 @@
 </catch>
 
 <link event="exit">
-  <grammar src="exit.grxml"/>
+  <grammar src="grammaire_exit.grxml"/>
 </link>
 
 <!-- declaration des variables Javascript -->
@@ -31,32 +31,16 @@
 	<!--  voir exemple dialogue 1--> 
 	<!--  voir exemple dialogue 2--> 
   <!-- Champ/Slot choix action -->
-	<field name="date_rendezvous">
+  
+  <subdialog name = "donner_date_rdv" src= "donner_date_rdv_sous_dialogue.vxml">
+	<filled>
+		 J'ai entedu le <value expr="donner_date_rdv.date_rdv.text" /> 
+		 <if cond="mode_trace=='True'">
+		   TRACE VALEUR  <value expr="donner_date_rdv.date_rdv.nb_jour" /> <value expr="donner_date_rdv.date_rdv.nb_mois" /> <value expr="donner_date_rdv.date_rdv.nb_annee" />
+		 </if>	 
+	</filled>
+	</subdialog>
 
-		<prompt> Quel date souhaitez-vous consulter? </prompt>
-
-		 <!-- Appel a une grammaire externe -->
-	 <grammar src="grammaire_dates_v3.grxml" type="application/srgs+xml"/>
-
-         <!-- Gestion des erreurs -->
-        <help> Donner une date au format écrit </help>
-        <noinput> Je n'ai pas entendu. Pouvez-vous me preciser la date de votre rendez-vous ? </noinput>
-		<nomatch> Je n'ai pas compris. Pouvez-vous me donner la date de votre rendez-vous S.V.P ? </nomatch>
-		
-		 <!-- Comportement du systeme apres confirmation/infirmation --> 
-         <!-- OK ==> On sort ou on passe a une autre sous-tache -->
-         <!-- NOK ==> On efface tout et on recommence --> 
-
-         <filled>
-                 <!-- Comportement si le mode TRACE est active --> 
-
-                 <if cond="mode_trace=='True'">
-				   TRACE Valeur  <value expr="date_rendezvous.nb_jour" /> <value expr="date_rendezvous.num_mois" /> <value expr="date_rendezvous.nb_annee" />
-				 </if>
-         </filled>
-
-	</field>
-	
 	<!-- Champ/Slot choix action -->
 	<field name="periode_rendezvous">
 
@@ -76,24 +60,15 @@
 
          <filled>
 				 <!-- select date,heure from  agenda--> 
-				<prompt> Vous avez bien un rendez-vous le <value expr="date_rendezvous.text" /> durant le  <value expr="periode_rendezvous.text" /> </prompt>
-				<if cond="periode_rendezvous.result == '0'">
-					<prompt> Le rendezvous est a huit heure </prompt>
-				</if>
-				<if cond="periode_rendezvous.result == '1'">
-					<prompt> Le rendezvous est a quatorze heure </prompt> 
-				</if>
-				<if cond="periode_rendezvous.result == '2'">
-					<prompt> Le rendezvous est a vingt heure </prompt> 
-				</if>
+				
                  <!-- Comportement si le mode TRACE est active --> 
                  <if cond="mode_trace=='True'">
-				   TRACE Valeur  <value expr="periode_rendezvous.text" />
+				   TRACE Valeur   <value expr="periode_rendezvous.text" />
 				 </if>
+				 <return namelist = "periode_rendezvous donner_date_rdv"/> 
          </filled>
-
+		
 	</field>
-	<goto next="orientation.vxml"/>
 </form>
 
 </vxml>

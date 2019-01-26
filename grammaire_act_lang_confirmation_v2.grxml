@@ -32,6 +32,7 @@
 			<item> ouais                </item>
                         <item> d_accord             </item>
                         <item> affirmatif           </item>
+                        <item> yep           </item>
 		</one-of>
 	</rule>
 
@@ -39,7 +40,7 @@
                <one-of>
                         <item repeat="1-2"> non     </item>
                         <item> <ruleref uri="#suite_non" />   </item>
-                        <item> oui <ruleref uri="#suite_non" /> </item>
+                        <item> non <ruleref uri="#suite_non" /> </item>
                </one-of>
         </rule>
         

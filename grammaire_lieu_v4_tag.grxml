@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar root="Lieu" version="1.0" xml:lang="fr">
+
+  <meta name="description" content="grammaire aide"/>
+  <meta name="author" content="Isabelle Ferrane"/>
+  <meta name="copyright" content="M2 Pro Dialogue"/>
+
+  <rule id="Lieu" >
+  <one-of>
+        <item> Saint-Michel <tag> 
+                              out.lieu = meta.current().text;
+                              out.text = meta.text; 
+                     </tag> </item>
+        <item> Saouzelong <tag>  
+                              out.lieu = meta.current().text;
+                              out.text = meta.text; 
+                     </tag> </item>
+        <item> Paul Sabatier <tag>  
+                              out.lieu = meta.current().text;
+                              out.text = meta.text; 
+                     </tag> </item>
+        <item> Saint-Agne <tag>  
+                              out.lieu = meta.current().text;
+                              out.text = meta.text; 
+                     </tag> </item>
+        <item> Gare <tag>  
+                              out.lieu = meta.current().text;
+                              out.text = meta.text; 
+                     </tag> </item>
+  </one-of>
+  </rule>
+
+</grammar>

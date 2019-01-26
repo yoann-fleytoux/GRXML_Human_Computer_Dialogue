@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="root document example"/>
+<meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<!-- start to interpret example05_1.vxml -->
+
+<noinput> Root 1. Hey, don't sleep! </noinput>
+<nomatch> Root 1. I don't understand you - say 'yes' or 'no'. </nomatch>
+<help> Root 1. You asked for help - say 'yes' or 'no'. </help>
+
+<catch event="exit">
+  <prompt> Root 1. Exit! </prompt>
+  <exit/>
+</catch>
+
+<link event="help">
+  <grammar src="help.grxml"/>
+</link>
+
+<link event="exit">
+  <grammar src="exit.grxml"/>
+</link>
+
+</vxml>

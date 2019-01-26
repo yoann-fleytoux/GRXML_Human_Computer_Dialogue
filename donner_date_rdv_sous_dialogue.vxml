@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ATTENTION : UTF-8 = PAS DE CARACTERES ACCENTUES -->
+<!-- si PB message : Invalid UTF-8 character --> 
+
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="donner_date_rdv"/>
+<meta name="author" content="Isabelle Ferrane"/>
+<meta name="copyright" content="IUP SI M2 Pro Dialogue"/>
+
+<link event="help">
+<grammar src="grammaire_aide.grxml" type="application/srgs+xml" />
+</link>
+
+<link event="quitter">
+<grammar src="grammaire_exit.grxml" type="application/srgs+xml" />
+</link>
+
+<catch event = "quitter">
+  <prompt> Au revoir le programme est en train de fermer </prompt>
+  <exit/>
+</catch>
+
+<form id= "donner_date_rdv">
+
+<!-- Champ/Slot de confirmation  -->
+  <field name="date_rdv">
+         <prompt> Pourriez-vous me donner la date de votre rendez-vous ? </prompt>
+
+         <!-- Appel a une grammaire externe -->
+	 <grammar src="grammaire_date_rdv_ab_v2.grxml" type="application/srgs+xml"/>
+
+         <!-- Gestion des erreurs -->
+         <help> Donner une date valide jour mois annee (example: le lundi douze janvier deux mille treize) </help>
+         <noinput> Je n'ai pas entendu. Pouvez-vous me repreciser votre date de rendez-vous ? </noinput>
+         <nomatch> Je n'ai pas compris. Pouvez-vous me repreciser votre date de rendez-vous ? </nomatch>
+
+         <!-- Comportement du systeme une fois ce champ rempli -->
+	 <filled>
+                   <return namelist = "date_rdv"/>
+     </filled>
+
+</field>
+
+</form>
+
+</vxml>

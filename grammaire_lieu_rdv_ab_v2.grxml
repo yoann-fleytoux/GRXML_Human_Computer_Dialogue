@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- fichier grammaire_num_ab.grxml -->
+<!-- reconnaitre un nombre brut ou , lui attribuer une valeur numerique .nb -->
+<!-- tout en memorisant la suite de mots qui correspond .text -->
+
+<grammar version="1.0" root="lieu_rdv" xml:lang="fr">
+
+<meta name="description" content="grammaire lieu rendez vous"/>
+<meta name="author" content="Isabelle Ferrane"/>
+<meta name="copyright" content="free for any purpose"/>
+
+<rule id="lieu_rdv" scope="public">
+<!-- out.nb = valeur numerique -->
+<!-- out.text = texte corrspondant au numero enonce -->
+<one-of>
+     <item> <ruleref uri="#filler_debut_phrase" /> 
+            <ruleref uri="grammaire_lieu_v4_tag.grxml#Lieu" />
+                     <tag> 
+                              out.lieu = rules.Lieu.lieu;
+                              out.text = meta.Lieu.text;
+                     </tag>
+     </item>
+     <item> <ruleref uri="grammaire_lieu_v4_tag.grxml#Lieu" /> 
+                     <tag> 
+                              out.lieu = rules.Lieu.lieu;
+                              out.text = meta.Lieu.text;
+                     </tag>
+      </item>
+</one-of>
+</rule>
+
+<rule id="filler_debut_phrase">
+      <one-of>
+              <item> c est a </item>
+              <item> mon rendez-vous est a </item>
+              <item> a </item>
+      </one-of>
+</rule>
+</grammar>

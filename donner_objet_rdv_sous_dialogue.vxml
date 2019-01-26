@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ATTENTION : UTF-8 = PAS DE CARACTERES ACCENTUES -->
+<!-- si PB message : Invalid UTF-8 character --> 
+
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="donner_objet_rdv"/>
+<meta name="author" content="Isabelle Ferrane"/>
+<meta name="copyright" content="IUP SI M2 Pro Dialogue"/>
+
+<link event="help">
+<grammar src="grammaire_aide.grxml" type="application/srgs+xml" />
+</link>
+
+<link event="quitter">
+<grammar src="grammaire_exit.grxml" type="application/srgs+xml" />
+</link>
+
+<catch event = "quitter">
+  <prompt> Au revoir le programme est en train de fermer </prompt>
+  <exit/>
+</catch>
+
+<form id= "donner_objet_rdv">
+
+<!-- Champ/Slot de confirmation  -->
+  <field name="objet_rdv">
+         <prompt> Pourriez-vous me donner l'objet de votre rendez-vous ? </prompt>
+
+         <!-- Appel a une grammaire externe -->
+	 <grammar src="grammaire_objet_rdv_ab_v2.grxml" type="application/srgs+xml"/>
+
+         <!-- Gestion des erreurs -->
+         <help> Donner un objet valide (example: c'est pour une revue)</help>
+         <noinput> Je n'ai pas entendu. Pouvez-vous me repreciser l'objet de rendez-vous ? </noinput>
+         <nomatch> Je n'ai pas compris. Pouvez-vous me repreciser l'objet de rendez-vous ? </nomatch>
+
+         <!-- Comportement du systeme une fois ce champ rempli -->
+	 <filled>
+                   <return namelist = "objet_rdv"/>
+     </filled>
+
+</field>
+
+</form>
+
+</vxml>

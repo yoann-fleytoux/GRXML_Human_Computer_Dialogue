@@ -16,7 +16,7 @@
 </catch>
 
 <link event="exit">
-  <grammar src="exit.grxml"/>
+  <grammar src="grammaire_exit.grxml"/>
 </link>
 
 <!-- declaration des variables Javascript -->
@@ -29,44 +29,12 @@
 
 <form id="delete">
 
-	<!-- Champ/Slot choix action -->
-	<field name="periode_rendezvous">
-
-		<prompt> Quel periode souhaitez-vous consulter? </prompt>
-
-		 <!-- Appel a une grammaire externe -->
-	 <grammar src="periode_grammaire.grxml" type="application/srgs+xml"/>
-
-         <!-- Gestion des erreurs -->
-        <help> matin/aprem/soir </help>
-        <noinput> Je n'ai pas entendu. Pouvez-vous me preciser la date de votre rendez-vous ? </noinput>
-		<nomatch> Je n'ai pas compris. Pouvez-vous me donner la date de votre rendez-vous S.V.P ? </nomatch>
-		
-		 <!-- Comportement du systeme apres confirmation/infirmation --> 
-         <!-- OK ==> On sort ou on passe a une autre sous-tache -->
-         <!-- NOK ==> On efface tout et on recommence --> 
-
-         <filled>
-				 <!-- select date,heure from  agenda--> 
-				<prompt> Vous avez bien un rendez-vous le <value expr="date_rendezvous.text" /> durant le  <value expr="periode_rendezvous.text" /> </prompt>
-				<if cond="periode_rendezvous.result == '0'">
-					<prompt> Le rendezvous est a huit heure </prompt>
-				</if>
-				<if cond="periode_rendezvous.result == '1'">
-					<prompt> Le rendezvous est a quatorze heure </prompt> 
-				</if>
-				<if cond="periode_rendezvous.result == '2'">
-					<prompt> Le rendezvous est a vingt heure </prompt> 
-				</if>
-                 <!-- Comportement si le mode TRACE est active --> 
-                 <if cond="mode_trace=='True'">
-				   TRACE Valeur  <value expr="periode_rendezvous.text" />
-				 </if>
-         </filled>
-
-	</field>
-	<goto next="orientation.vxml"/>
-</form>
+<subdialog name = "sous_dialogue_de_suppression_rdv" src= "supprimer_rdv_sous_dialogue.vxml">
+<!--<param name ="Essai param1" expr= "vrai" /> <param name ="Essai param2" expr= "faux" />-->
+<filled>
+	<return namelist = "sous_dialogue_de_suppression_rdv"/>
+</filled>
+</subdialog>
   
 </form>
 

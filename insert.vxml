@@ -16,7 +16,7 @@
 </catch>
 
 <link event="exit">
-  <grammar src="exit.grxml"/>
+  <grammar src="grammaire_exit.grxml"/>
 </link>
 
 <!-- declaration des variables Javascript -->
@@ -29,43 +29,129 @@
 
 <form id="requete">
 
-	<!-- Champ/Slot choix action -->
-	<field name="periode_rendezvous">
+<!-- initialisation des variables internes au formulaire -->
+<var name="reponse" />
+<var name="message_confirm" />
 
-		<prompt> Quel periode souhaitez-vous consulter? </prompt>
+<subdialog name = "donner_date_rdv" src= "donner_date_rdv_sous_dialogue.vxml">
+<filled>
+  <!-- Comportement si le mode TRACE est active --> 
+	        Votre rendez-vous est le <value expr="donner_date_rdv.date_rdv.text" />
+          <if cond="mode_trace=='True'">
+                  TRACE VALEUR  <!--num_jour:<value expr="donner_date_rdv.date_rdv.num_jour" />--> nb_jour:<value expr="donner_date_rdv.date_rdv.nb_jour" /> nb_mois:<value expr="donner_date_rdv.date_rdv.nb_mois" /> nb_annee:<value expr="donner_date_rdv.date_rdv.nb_annee" />
+          </if>
+</filled>
+</subdialog>
 
-		 <!-- Appel a une grammaire externe -->
-	 <grammar src="periode_grammaire.grxml" type="application/srgs+xml"/>
-
-         <!-- Gestion des erreurs -->
-        <help> matin/aprem/soir </help>
-        <noinput> Je n'ai pas entendu. Pouvez-vous me preciser la date de votre rendez-vous ? </noinput>
-		<nomatch> Je n'ai pas compris. Pouvez-vous me donner la date de votre rendez-vous S.V.P ? </nomatch>
-		
-		 <!-- Comportement du systeme apres confirmation/infirmation --> 
-         <!-- OK ==> On sort ou on passe a une autre sous-tache -->
-         <!-- NOK ==> On efface tout et on recommence --> 
-
-         <filled>
-				 <!-- select date,heure from  agenda--> 
-				<prompt> Vous avez bien un rendez-vous le <value expr="date_rendezvous.text" /> durant le  <value expr="periode_rendezvous.text" /> </prompt>
-				<if cond="periode_rendezvous.result == '0'">
-					<prompt> Le rendezvous est a huit heure </prompt>
-				</if>
-				<if cond="periode_rendezvous.result == '1'">
-					<prompt> Le rendezvous est a quatorze heure </prompt> 
-				</if>
-				<if cond="periode_rendezvous.result == '2'">
-					<prompt> Le rendezvous est a vingt heure </prompt> 
-				</if>
+<!-- appel a un sous-dialogue et specification des paramètres et de leurs valeurs --> 
+<subdialog name = "sous_dialogue_de_confirmation_Date" src= "gestion_agenda_sous_dialogue.vxml">
+<filled>
+<prompt> la valeur recupere est <value expr= "sous_dialogue_de_confirmation_Date.confirm"/> </prompt>
+                 <if cond="sous_dialogue_de_confirmation_Date.confirm=='True'">
+                     <assign name="message_confirm" expr="'TRACE date rendez vous confirme'" />
+                 <else/>
+                     <assign name="message_confirm" expr="'TRACE date rendez vous non confirme'" />
+                     <clear namelist="donner_date_rdv sous_dialogue_de_confirmation_Date.confirm" />
+                 </if>
                  <!-- Comportement si le mode TRACE est active --> 
-                 <if cond="mode_trace=='True'">
-				   TRACE Valeur  <value expr="periode_rendezvous.text" />
-				 </if>
-         </filled>
 
-	</field>
-	<goto next="orientation.vxml"/>
+                 <if cond="mode_trace=='True'">
+                   TRACE Reponse <value expr="message_confirm" />
+                 </if>
+</filled>
+</subdialog>
+
+<!-- Champ/Slot de heure de rendez vous -->
+<subdialog name = "donner_heure_rdv" src= "donner_heure_rdv_sous_dialogue.vxml">
+<filled>
+  <!-- Comportement si le mode TRACE est active -->
+      Votre rendez-vous est a <value expr="donner_heure_rdv.heure_rdv.text" />
+      <if cond="mode_trace=='True'">
+                TRACE VALEUR  heures:<value expr="donner_heure_rdv.heure_rdv.h" /> minutes:<value expr="donner_heure_rdv.heure_rdv.min" /> minutes totales:<value expr="donner_heure_rdv.heure_rdv.minTot" />
+      </if>
+</filled>
+</subdialog>
+
+<!-- appel a un sous-dialogue et specification des paramètres et de leurs valeurs --> 
+<subdialog name = "sous_dialogue_de_confirmation_Heure" src= "gestion_agenda_sous_dialogue.vxml">
+<filled>
+<prompt> la valeur recupere est <value expr= "sous_dialogue_de_confirmation_Heure.confirm"/> </prompt>
+                 <if cond="sous_dialogue_de_confirmation_Heure.confirm=='True'">
+                     <assign name="message_confirm" expr="'TRACE heure rendez vous confirme'" />
+                 <else/>
+                     <assign name="message_confirm" expr="'TRACE heure rendez vous non confirme'" />
+                     <clear namelist="donner_heure_rdv sous_dialogue_de_confirmation_Heure" />
+                 </if>
+                 <!-- Comportement si le mode TRACE est active --> 
+
+                 <if cond="mode_trace=='True'">
+                   TRACE Reponse <value expr="message_confirm" />
+                 </if>
+</filled>
+</subdialog>
+
+<!-- Champ/Slot de heure de rendez vous -->
+<subdialog name = "donner_lieu_rdv" src= "donner_lieu_rdv_sous_dialogue.vxml">
+<filled>
+  <!-- Comportement si le mode TRACE est active -->
+      Votre rendez-vous est a <value expr="donner_lieu_rdv.lieu_rdv.text" />
+      <if cond="mode_trace=='True'"> 
+            TRACE VALEUR  lieu:<value expr="donner_lieu_rdv.lieu_rdv.lieu" /> text:<value expr="donner_lieu_rdv.lieu_rdv.text" />
+      </if>
+</filled>
+</subdialog>
+
+<!-- appel a un sous-dialogue et specification des paramètres et de leurs valeurs --> 
+<subdialog name = "sous_dialogue_de_confirmation_Lieu" src= "gestion_agenda_sous_dialogue.vxml">
+<!-- <param name ="confirmHeure" expr= "vrai" /> <param name ="nom_parametre2" expr= "valeur parametre2" />-->
+<filled>
+<prompt> la valeur recupere est <value expr= "sous_dialogue_de_confirmation_Lieu.confirm"/> </prompt>
+                 <if cond="sous_dialogue_de_confirmation_Lieu.confirm=='True'">
+                     <assign name="message_confirm" expr="'TRACE lieu rendez vous confirme'" />
+                 <else/>
+                     <assign name="message_confirm" expr="'TRACE lieu rendez vous non confirme'" />
+                     <clear namelist="donner_lieu_rdv sous_dialogue_de_confirmation_Lieu.confirm" />
+                 </if>
+                 <!-- Comportement si le mode TRACE est active --> 
+
+                 <if cond="mode_trace=='True'">
+                   TRACE Reponse <value expr="message_confirm" />
+                 </if>
+</filled>
+</subdialog>
+
+<subdialog name = "donner_objet_rdv" src= "donner_objet_rdv_sous_dialogue.vxml">
+<filled>
+  <!-- Comportement si le mode TRACE est active --> 
+	        Votre rendez-vous est pour <value expr="donner_objet_rdv.objet_rdv.text" />
+          <if cond="mode_trace=='True'">
+                  TRACE VALEUR objet <value expr="donner_objet_rdv.objet_rdv.objet" />
+          </if>
+</filled>
+</subdialog>
+
+<!-- appel a un sous-dialogue et specification des paramètres et de leurs valeurs --> 
+<subdialog name = "sous_dialogue_de_confirmation_Objet" src= "gestion_agenda_sous_dialogue.vxml">
+<!-- <param name ="confirmHeure" expr= "vrai" /> <param name ="nom_parametre2" expr= "valeur parametre2" />-->
+<filled>
+<prompt> la valeur recupere est <value expr= "sous_dialogue_de_confirmation_Objet.confirm"/> </prompt>
+                 <if cond="sous_dialogue_de_confirmation_Objet.confirm=='True'">
+                     <assign name="message_confirm" expr="'TRACE objet rendez vous confirme'" />
+                 <else/>
+                     <assign name="message_confirm" expr="'TRACE objet rendez vous non confirme'" />
+                     <clear namelist="donner_objet_rdv sous_dialogue_de_confirmation_Objet" />
+                 </if>
+                 <!-- Comportement si le mode TRACE est active --> 
+
+                 <if cond="mode_trace=='True'">
+                   TRACE Reponse <value expr="message_confirm" />
+                 </if>
+</filled>
+</subdialog>
+
+<block>
+	<return namelist = "donner_date_rdv donner_heure_rdv donner_lieu_rdv donner_objet_rdv"/>
+</block>
   
 </form>
 

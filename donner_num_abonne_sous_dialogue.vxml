@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ATTENTION : UTF-8 = PAS DE CARACTERES ACCENTUES -->
+<!-- si PB message : Invalid UTF-8 character --> 
+
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="donner_date_rdv"/>
+<meta name="author" content="Isabelle Ferrane"/>
+<meta name="copyright" content="IUP SI M2 Pro Dialogue"/>
+
+<link event="help">
+<grammar src="grammaire_aide.grxml" type="application/srgs+xml" />
+</link>
+
+<link event="quitter">
+<grammar src="grammaire_exit.grxml" type="application/srgs+xml" />
+</link>
+
+<catch event = "quitter">
+  <prompt> Au revoir le programme est en train de fermer </prompt>
+  <exit/>
+</catch>
+
+<form id= "donner_num_abonne">
+
+<!-- Champ/Slot de confirmation  -->
+  <field name="num_abonne">
+
+	 <prompt> Quel est votre numero d'abonne ? </prompt>
+
+         <!-- Appel a une grammaire externe -->
+	 <grammar src="grammaire_num_ab_v2.grxml" type="application/srgs+xml"/>
+
+         <!-- Gestion des erreurs -->
+         <help> Donner un nombre compris entre 1 et 999 999 </help>
+         <noinput> Je n'ai pas entendu. Pouvez-vous me preciser votre numero d'abonne ? </noinput>
+         <nomatch> Je n'ai pas compris. Pouvez-vous me donner votre numero d'abonne S.V.P ? </nomatch>
+
+         <!-- Comportement du systeme une fois ce champ rempli -->
+	 <filled>
+          <if cond="num_abonne.nb &gt; 2500 || num_abonne.nb &lt; 1">
+                   <prompt> Etes-vous sur? Recommencez car ce numero ne semble pas le bon, il n'est pas valide.  </prompt>
+                   <clear namelist="num_abonne" />
+          <else/>
+                   <return namelist = "num_abonne"/>
+          </if>     	 
+         </filled>
+  </field>
+
+</form>
+
+</vxml>

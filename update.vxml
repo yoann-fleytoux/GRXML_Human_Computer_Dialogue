@@ -16,7 +16,7 @@
 </catch>
 
 <link event="exit">
-  <grammar src="exit.grxml"/>
+  <grammar src="grammaire_exit.grxml"/>
 </link>
 
 <!-- declaration des variables Javascript -->
@@ -28,55 +28,16 @@
 <!-- start to interpret this file -->
 
 <form id= "update">
-<!--  voir exemple dialogue 3--> 
 
-<!-- contenu sous-dialogue idem formulaire -->
-<!--<var name = "Essai param1"/>
-<var name = "Essai param2"/>-->
+<subdialog name = "sous_dialogue_de_deplacement_rdv" src= "deplacer_rdv_sous_dialogue.vxml">
+<!--<param name ="Essai param1" expr= "vrai" /> <param name ="Essai param2" expr= "faux" />-->
+<filled>
+  <!-- Comportement si le mode TRACE est active --> 
+ 
+	<return namelist = "sous_dialogue_de_deplacement_rdv "/>			
+</filled>
+</subdialog>
 
-	<field name="date_rdv_a_deplacer">
-	<prompt> Donner la date du rendez-vous que vous souhaiteriez deplacer? <!--est ce <value expr="Essai param1" /> ou <value expr="Essai param2" />--></prompt>
-			 
-			 <!-- Appel a une grammaire externe -->
-			 <grammar src="grammaire_date_rdv_ab_v2.grxml" type="application/srgs+xml" />
-			 
-			 <!-- Gestion des erreurs -->
-			 <help> Repondez en donnant une date complete en lettre (annee a partir de 2013) </help>
-			 <noinput> Je n'ai pas entendu. Pouvez-vous repeter ? </noinput>
-			 <nomatch> Je ne vous ai pas compris. Pouvez-vous repondre une date valide? </nomatch>
-			 
-			 <!-- Comportement du systeme apres confirmation/infirmation --> 
-			 <!-- OK ==> On sort ou on passe a une autre sous-tache -->
-			 <!-- NOK ==> On efface tout et on recommence --> 
-
-		<filled>
-			Merci! On vous change cela
-			<prompt> la valeur récupéré est <value expr= "date_rdv_a_deplacer.text"/> </prompt>
-		</filled>
-	</field>
-
-	<field name="horaire_rdv_a_deplacer">
-	<prompt> Donner maintenant l'horaire du rendez-vous que vous souhaiteriez deplacer? <!--est ce <value expr="Essai param1" /> ou <value expr="Essai param2" />--></prompt>
-			 
-			 <!-- Appel a une grammaire externe -->
-			 <grammar src="grammaire_heure_rdv_ab_v2.grxml" type="application/srgs+xml" />
-			 
-			 <!-- Gestion des erreurs -->
-			 <help> Repondez en donnant une horaire complete </help>
-			 <noinput> Je n'ai pas entendu. Pouvez-vous repeter ? </noinput>
-			 <nomatch> Je ne vous ai pas compris. Pouvez-vous repondre une horaire valide? </nomatch>
-			 
-			 <!-- Comportement du systeme apres confirmation/infirmation --> 
-			 <!-- OK ==> On sort ou on passe a une autre sous-tache -->
-			 <!-- NOK ==> On efface tout et on recommence --> 
-
-		<filled>
-			Merci! On vous change cela
-			<prompt> la valeur récupéré est <value expr= "horaire_rdv_a_deplacer.text"/> </prompt>
-			<!--<return namelist = "horaire_rdv_a_deplacer date_rdv_a_deplacer"/>  TODO-->  
-			<goto next="orientation.vxml"/>
-		</filled>
-	</field>
 
 </form>
 

@@ -10,7 +10,7 @@
 	</item>
 		<one-of>
 			<item>
-				<ruleref uri="#delete_phrase" /> 
+				<ruleref uri="#delete_phrase" />
 			</item>
 			<item>
 				<ruleref uri="#insert_phrase" /> 
@@ -23,7 +23,7 @@
 			</item>
 
 		</one-of>
-		<tag> out.text = rules.latest().text; out.result = rules.latest().result </tag>
+		<tag> out.text = rules.latest().text; out.result = rules.latest().result; out.choice = rules.latest().choice; out.command="SELECT * FROM rendez-vous WHERE num_client=" </tag>
 	<item repeat ="0-1">
 	<ruleref uri="#filler_fin_phrase" /> 
 	</item>
@@ -31,41 +31,52 @@
   
 <rule id="delete_phrase">
 	<one-of>
+		  <item> supprimer </item>
+		  <item> annuler </item>
 		  <item> delete </item>
 	</one-of>
-	<tag> out.text = meta.current().text + " "; out.result=0 </tag> 
+	<tag> out.text = meta.current().text + " "; out.result=0; out.choice="delete" ; </tag> 
 </rule>
   
 <rule id="insert_phrase">
 	<one-of>
+		  <item> ajouter </item>
+		  <item> prendre </item>
 		  <item> insert </item>
 	</one-of>
-	<tag> out.text = meta.current().text + " "; out.result=1 </tag> 
+	<tag> out.text = meta.current().text + " "; out.result=1; out.choice="insert" </tag> 
 </rule>
 
 <rule id="select_phrase">
 	<one-of>
+		  <item> consulter </item>
+		  <item> voir </item>
 		  <item> select </item>
 	</one-of>
-	<tag> out.text = meta.current().text + " "; out.result=2 </tag> 
+	<tag> out.text = meta.current().text + " "; out.result=2; out.choice="select" </tag> 
 </rule>
 
 <rule id="update_phrase">
 	<one-of>
+		  <item> deplacer </item>
+		  <item> modifier </item>
 		  <item> update </item>
 	</one-of>
-	<tag> out.text = meta.current().text + " "; out.result=3 </tag> 
+	<tag> out.text = meta.current().text + " "; out.result=3; out.choice="update" </tag> 
 </rule>
 
 <rule id="filler_debut_phrase">
       <one-of>
-              <item> lol1 </item>
+              <item> je souhaiterais </item>
+              <item> je voudrais </item>
+              <item> serait-il possible de </item>
       </one-of>
 </rule>
 
 <rule id="filler_fin_phrase">
       <one-of>
-              <item> lol2 </item>
+              <item> un rendez-vous </item>
+			  <item> mes rendez-vous </item>
       </one-of>
 </rule>
 </grammar>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ATTENTION : UTF-8 = PAS DE CARACTERES ACCENTUES -->
+<!-- si PB message : Invalid UTF-8 character --> 
+
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="donner_date_rdv"/>
+<meta name="author" content="Isabelle Ferrane"/>
+<meta name="copyright" content="IUP SI M2 Pro Dialogue"/>
+
+<link event="help">
+<grammar src="grammaire_aide.grxml" type="application/srgs+xml" />
+</link>
+
+<link event="quitter">
+<grammar src="grammaire_exit.grxml" type="application/srgs+xml" />
+</link>
+
+<catch event = "quitter">
+  <prompt> Au revoir le programme est en train de fermer </prompt>
+  <exit/>
+</catch>
+
+<form id= "donner_heure_rdv">
+
+<!-- Champ/Slot de heure de rendez vous -->
+  <field name="heure_rdv">
+         <prompt> Pourriez-vous me donner l'heure de votre rendez-vous ? </prompt>
+
+         <!-- Appel a une grammaire externe -->
+	 <grammar src="grammaire_heure_rdv_ab_v2.grxml" type="application/srgs+xml"/> 
+
+         <!-- Gestion des erreurs -->
+         <help> Donner une heure comprise entre 7h30 et 21h30 </help>
+         <noinput> Je n'ai pas entendu. Pouvez-vous me repreciser votre heure de rendez-vous ? </noinput>
+         <nomatch> Je n'ai pas compris. Pouvez-vous me repreciser votre heure de rendez-vous ? </nomatch>
+
+         <!-- Comportement du systeme une fois ce champ rempli -->
+	        <filled>
+	        Vous souhaitez avoir un rendez-vous à <value expr="heure_rdv.text" /> 
+          <if cond="heure_rdv.nb &gt; 23">
+                   <prompt> Etes-vous sur? Recommencez car cette horaire ne semble pas valide.  </prompt>
+                   <clear namelist="heure_rdv" />
+          <elseif cond="heure_rdv.min &gt; 59"/>
+                   <prompt> Etes-vous sur? Recommencez car cette horaire ne semble pas valide.  </prompt>
+                   <clear namelist="heure_rdv" />
+          <elseif cond="heure_rdv.minTot &lt; 450"/>
+                   <prompt> Etes-vous sur? C'est trop tot pour un rendez-vous.  </prompt>
+                   <clear namelist="heure_rdv" />
+          <elseif cond="heure_rdv.minTot &gt; 1290"/>
+                   <prompt> Etes-vous sur? C'est trop tot pour un rendez-vous.  </prompt>
+                   <clear namelist="heure_rdv" />
+          <else/>
+                   <return namelist = "heure_rdv"/>                 
+          </if>    	 
+         </filled>
+
+</field>
+
+</form>
+
+</vxml>

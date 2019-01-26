@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://www.w3.org/2001/06/grammar" version="1.0" root="Horaire" xml:lang="fr">
+
+	<meta name="description" content="Horaire"/>
+	<meta name="author" content="Yoann Fleytoux"/>
+	
+	
+	<rule id="horaire" scope="public">
+		<one-of>
+	              <item> <ruleref uri="#maths"/> </item>
+	    </one-of>
+		
+		<tag>       out.H = rules.latest().H ;
+					out.MN = rules.latest().MN ;
+					out.NB_MN = "total minutes: "+ rules.latest().NB_MN ;
+		</tag>
+	</rule>
+	
+	<rule id = "maths" >
+		<item repeat="0-1">
+			<ruleref uri="#heures_nombres" />
+			<tag> out.H = rules.heures_nombres.H; 
+				out.MN = rules.heures_nombres.MN;
+				out.NB_MN = rules.heures_nombres.NB_MN;
+				out.text = meta.heures_nombres.text + " " </tag>
+		</item>
+		
+		<item repeat="0-1">
+			<ruleref uri="#heures_mots" />
+			<tag> out.H = rules.heures_mots.H; 
+				out.MN = rules.heures_mots.MN;
+				out.NB_MN = rules.heures_mots.NB_MN;
+				out.text = meta.heures_mots.text + " " </tag>
+		</item>
+		
+		<item repeat="0-1">
+			<ruleref uri="#minute" />
+			<tag> out.MN = rules.minute.MN ;
+				out.MN = rules.minute.MN;
+				out.NB_MN = rules.minute.NB_MN;
+				out.text = out.text + " " + meta.minute.text; </tag>
+		</item>
+	</rule>
+	
+	
+	<!-- nombres de 1 a 59 -->
+	<rule id= "minutes">
+		<one-of>
+		
+			<item>
+			<ruleref uri="grammaire_nombre_v3.grxml#nombre" />
+				<tag> out.MN = rules.nombre.nb ; out.NB_MN = rules.nombre.nb ; out.text = out.text + " " + meta.nombre.text </tag>
+			</item>
+			
+			<item> et-quart      
+				<tag> out.MN = 15 ; out.NB_MN = 15 </tag> 
+			</item>
+			
+			<item> et-demi      
+				<tag> out.MN = 30 ; out.NB_MN = 30 </tag> 
+			</item>
+			
+			<!-- pas sure pour ca -->
+			<item> moins vingt      
+				<tag> out.MN = -20 ; out.NB_MN = -20 </tag> 
+			</item>
+			
+			<item> moins le quart      
+				<tag> out.MN = -15 ; out.NB_MN = -15 </tag> 
+			</item>
+		
+		</one-of>
+		<tag> out.text = meta.current().text + " " </tag> <!-- ??? -->
+	</rule>
+
+	<rule id="heures_nombres" scope="public">
+		<item>
+		<ruleref uri="grammaire_nombre_v3.grxml#nombre" />
+			<tag> out.MN = 0; out.NB_MN = rules.nombre.nb*60 ; out.text = out.text + " " + meta.nombre.text </tag>
+		</item>
+	</rule>
+	
+	<rule id="heures_mots" scope="public">
+		<one-of>
+			<item> midi      
+				<tag> out.H = 12 ; out.MN = 0 ; out.NB_MN = 12*60 ; out.text ="12" </tag> 
+			</item>
+						
+			<item> minuit      
+				<tag> out.H = 12 ; out.MN = 0 ; out.NB_MN = 0 ; out.text ="00"</tag> 
+			</item>
+		</one-of>
+	</rule>
+	
+	
+	<rule id="heures_noms" scope="public">
+		<one-of>
+			<item> heure      
+
+			</item>
+						
+			<item> heures      
+
+			</item>
+		</one-of>
+		<tag> out.text = meta.current().text + " " </tag> <!-- ??? -->
+	</rule>
+
+</grammar>

@@ -16,7 +16,7 @@
      <item> <ruleref uri="#filler_debut_phrase" /> 
             <ruleref uri="grammaire_dates_v4_tag.grxml#Date_v4" />
                      <tag> 
-                              <!--out.num_jour = rules.Date.num_jour;-->
+                              <!--out.num_jour = rules.Date.nb_jour;-->
                               out.nb_jour = rules.Date_v4.nb_jour;
                               out.nb_mois = rules.Date_v4.nb_mois;
                               out.nb_annee = rules.Date_v4.nb_annee;

@@ -22,12 +22,19 @@
 
      <rule id="Heures">
                 <one-of>
-                        <item> <ruleref uri="grammaire_nombre_v3.grxml#nombre"/> heures <tag> out.h = rules.nombre.nb </tag> </item>
+                        <item> <ruleref uri="grammaire_nombre_v3.grxml#nombre" /> <ruleref uri="#heures" /> <tag> out.h = rules.nombre.nb </tag> </item>
                         <item> une heure <tag> out.h = 1 </tag> </item>
                         <item> midi <tag> out.h = 12 </tag> </item>
                         <item> minuit <tag> out.h = 24 </tag> </item>
                 </one-of>
                 <tag> out.text = meta.current().text </tag>
+     </rule>
+
+     <rule id="heures">
+		<one-of>
+                <item> heures </item>
+				<item> heure </item>
+		 </one-of>
      </rule>
 
      <rule id="Minutes">
@@ -41,7 +48,7 @@
      <rule id="MinutesAbsolues">
                 <one-of>
                         <item> une <tag> out.mn = 1; out.flag = 0 </tag> </item>
-                        <item> <ruleref uri="grammaire_nombre_v3.grxml#nombre"/> <tag> out.mn = rules.nombre.nb; out.flag = 0 </tag> </item>
+                        <item> <ruleref uri="grammaire_nombre_v3.grxml#nombre" /> <tag> out.mn = rules.nombre.nb; out.flag = 0 </tag> </item>
                         <item> et quart <tag> out.mn = 15; out.flag = 0 </tag> </item>
                         <item> et demie <tag> out.mn = 30; out.flag = 0 </tag> </item>
                         <item> trente-et-une <tag> out.mn = 31; out.flag = 0 </tag> </item>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ATTENTION : UTF-8 = PAS DE CARACTERES ACCENTUES -->
+<!-- si PB message : Invalid UTF-8 character --> 
+
+<vxml version="2.0" xmlns="http://www.w3.org/2001/vxml">
+
+<meta name="description" content="deplacer rendez-vous version 0"/>
+<meta name="author" content="Isabelle Ferrane"/>
+<meta name="copyright" content="IUP SI M2 Pro Dialogue"/>
+
+<link event="help">
+<grammar src="grammaire_aide.grxml" type="application/srgs+xml" />
+</link>
+
+<link event="quitter">
+<grammar src="grammaire_exit.grxml" type="application/srgs+xml" />
+</link>
+
+<catch event = "quitter">
+  <prompt> Au revoir le programme est en train de fermer </prompt>
+  <exit/>
+</catch>
+
+<form id= "sous_dialogue_de_deplacement_rdv">
+
+<field name="date_rdv_a_deplacer">
+<prompt> Donner la date du rendez-vous que vous souhaiteriez deplacer? </prompt>
+         
+         <!-- Appel a une grammaire externe -->
+         <grammar src="grammaire_date_rdv_ab_v2.grxml" type="application/srgs+xml" />
+         
+         <!-- Gestion des erreurs -->
+         <help> Repondez en donnant une horaire complete </help>
+         <noinput> Je n'ai pas entendu. Pouvez-vous repeter ? </noinput>
+         <nomatch> Je ne vous ai pas compris. Pouvez-vous repondre une horaire valide? </nomatch>
+         
+         <!-- Comportement du systeme apres confirmation/infirmation --> 
+         <!-- OK ==> On sort ou on passe a une autre sous-tache -->
+         <!-- NOK ==> On efface tout et on recommence --> 
+
+    <filled>
+        Merci! On vous change cela
+        <prompt> la valeur recupere est <value expr= "date_rdv_a_deplacer.text"/> </prompt>
+    </filled>
+</field>
+
+<field name="horaire_rdv_a_deplacer">
+<prompt> Donner maintenant l'horaire du rendez-vous que vous souhaiteriez deplacer? </prompt>
+         
+         <!-- Appel a une grammaire externe -->
+         <grammar src="grammaire_heure_rdv_ab_v2.grxml" type="application/srgs+xml" />
+         
+         <!-- Gestion des erreurs -->
+         <help> Repondez en donnant une horaire complete </help>
+         <noinput> Je n'ai pas entendu. Pouvez-vous repeter ? </noinput>
+         <nomatch> Je ne vous ai pas compris. Pouvez-vous repondre une horaire valide? </nomatch>
+         
+         <!-- Comportement du systeme apres confirmation/infirmation --> 
+         <!-- OK ==> On sort ou on passe a une autre sous-tache -->
+         <!-- NOK ==> On efface tout et on recommence --> 
+
+    <filled>
+        Merci! On vous change cela
+        <prompt> la valeur recupere est <value expr= "horaire_rdv_a_deplacer.text"/> </prompt>
+        <return namelist = "horaire_rdv_a_deplacer date_rdv_a_deplacer"/>    
+    </filled>
+</field>
+
+</form>
+
+</vxml>

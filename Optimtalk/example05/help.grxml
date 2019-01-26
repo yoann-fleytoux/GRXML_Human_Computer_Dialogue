@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar root="main" version="1.0" xml:lang="en">
+
+  <meta name="description" content="help grammar"/>
+  <meta name="author" content="OptimSys, s.r.o., Czech Republic (http://www.optimsys.cz)"/>
+  <meta name="copyright" content="free for any purpose"/>
+
+  <rule id="main" scope="public">
+    <item repeat="0-1"> please </item>
+    <item repeat="0-1"> I need </item>
+    help
+    <item repeat="0-1"> me </item>
+    <item repeat="0-1"> please </item>
+  </rule>
+</grammar>

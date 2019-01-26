@@ -11,16 +11,13 @@
         <item repeat="0-1"> svp </item>
         <item repeat="0-1"> je voudrais de l </item>
         <item repeat="0-1"> je voudrais savoir </item>
-		<item repeat="0-1"> qu est ce que je </item>
         <one-of>
       	        <item> quoi faire </item>
       	        <item> faire quoi </item>
       	        <item> faire </item>
       	        <item> aider </item>
       	        <item> aide </item>
-				<item> peux faire </item>
-				<item> doit faire </item>
-	</one-of>
+	      </one-of>
   </rule>
 
 </grammar>
